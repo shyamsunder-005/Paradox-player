@@ -19,20 +19,28 @@ if st.button("Download"):
     else:
         with st.spinner("Downloading..."):
             try:
-                downloaded = download_video_or_playlist(
+                # Call function and return ZIP buffer
+                zip_buffer = download_video_or_playlist(
                     url=url,
                     download_path=download_path,
                     download_type=download_type,
                     quality=quality,
-                    content_type=content_type
+                    content_type=content_type,
+                    zip_output=True  # Modified version of downloader supports this
                 )
-                if downloaded:
-                    st.success(f"Downloaded {len(downloaded)} item(s) successfully!")
-                    st.markdown("### 📄 Files:")
-                    for f in os.listdir(download_path):
-                        file_path = os.path.join(download_path, f)
-                        st.markdown(f"[📁 {f}](./{file_path})")
+
+                if zip_buffer:
+                    st.success("✅ Download completed and packaged into ZIP!")
+
+                    # Provide download button for ZIP
+                    st.download_button(
+                        label="📦 Download All as ZIP",
+                        data=zip_buffer,
+                        file_name="youtube_downloads.zip",
+                        mime="application/zip"
+                    )
                 else:
                     st.warning("No files were downloaded.")
+
             except Exception as e:
                 st.error(f"❌ Error: {e}")
