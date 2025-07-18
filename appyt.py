@@ -54,4 +54,4 @@ if submit_btn:
 
 # Footer
 st.markdown("""---""")
-st.markdown("<div style='text-align: center; color: gray;'>Made by Sri</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: gray;'>Created by Sree</div>", unsafe_allow_html=True)
