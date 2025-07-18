@@ -3,7 +3,7 @@ import time
 from downloader import download_video_or_playlist
 
 st.set_page_config(page_title=" Paradox-Player", layout="centered")
-st.title("YouTube Downloader")
+st.title("Paradox-playerYT Downloader")
 
 # Form layout for input
 with st.form("download_form"):
