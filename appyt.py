@@ -1,46 +1,38 @@
 import streamlit as st
-from downloader import download_video_or_playlist, QUALITY_OPTIONS
-import os
+from downloader import download_video_or_playlist
 
-st.title("📥 YouTube Downloader")
-st.markdown("Download **YouTube Playlists** or **Single Videos** as **video** or **audio**")
+st.title("📥 YouTube Downloader with ZIP Export")
 
-# UI Inputs
 url = st.text_input("Enter YouTube Video or Playlist URL")
 content_type = st.radio("Select content type", ["Single Video", "Playlist"])
 download_type = st.selectbox("Download type", ["video", "audio"])
-quality = st.selectbox("Video Quality (only for video)", list(QUALITY_OPTIONS.keys()))
-download_path = st.text_input("Download folder", "downloads")
+quality = st.selectbox("Select Quality", ["Best", "Worst", "480p", "720p", "1080p"])
+zip_filename = st.text_input("Enter ZIP file name", value="my_download.zip")
 
-# Run button
 if st.button("Download"):
-    if not url:
-        st.error("Please enter a valid URL.")
+    if not url.strip():
+        st.warning("Please enter a valid URL.")
     else:
-        with st.spinner("Downloading..."):
+        with st.spinner("Downloading and preparing your ZIP file..."):
             try:
-                # Call function and return ZIP buffer
                 zip_buffer = download_video_or_playlist(
                     url=url,
-                    download_path=download_path,
                     download_type=download_type,
                     quality=quality,
                     content_type=content_type,
-                    zip_output=True  # Modified version of downloader supports this
+                    zip_output=True
                 )
 
-                if zip_buffer:
-                    st.success("✅ Download completed and packaged into ZIP!")
+                if not zip_filename.endswith(".zip"):
+                    zip_filename += ".zip"
 
-                    # Provide download button for ZIP
-                    st.download_button(
-                        label="📦 Download All as ZIP",
-                        data=zip_buffer,
-                        file_name="youtube_downloads.zip",
-                        mime="application/zip"
-                    )
-                else:
-                    st.warning("No files were downloaded.")
+                st.success("Download ready!")
+                st.download_button(
+                    label="📦 Download ZIP",
+                    data=zip_buffer,
+                    file_name=zip_filename,
+                    mime="application/zip"
+                )
 
             except Exception as e:
-                st.error(f"❌ Error: {e}")
+                st.error(f"Download failed: {e}")

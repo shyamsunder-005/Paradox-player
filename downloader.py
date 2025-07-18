@@ -16,8 +16,6 @@ def download_video_or_playlist(url, download_path='downloads', download_type='vi
         os.makedirs(download_path)
 
     is_playlist = (content_type == 'Playlist')
-
-    # Common YDL options
     outtmpl = os.path.join(download_path, '%(title)s.%(ext)s')
 
     ydl_opts = {
@@ -25,7 +23,7 @@ def download_video_or_playlist(url, download_path='downloads', download_type='vi
         'outtmpl': outtmpl,
         'noplaylist': not is_playlist,
         'ignoreerrors': True,
-        'quiet': False,
+        'quiet': True,
     }
 
     if download_type == 'audio':
@@ -52,7 +50,7 @@ def download_video_or_playlist(url, download_path='downloads', download_type='vi
                 continue
             try:
                 title = entry.get('title', 'video')
-                ext = 'mp3' if download_type == 'audio' else entry.get('ext', 'mp4')
+                ext = 'mp3' if download_type == 'audio' else 'mp4'
                 filename = f"{title}.{ext}"
                 filepath = os.path.join(download_path, filename)
 
@@ -62,7 +60,6 @@ def download_video_or_playlist(url, download_path='downloads', download_type='vi
             except Exception as e:
                 print(f'Error downloading {entry.get("title", "Unknown")}: {str(e)}')
 
-    # Optionally zip the files
     if zip_output and downloaded_filepaths:
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -71,6 +68,6 @@ def download_video_or_playlist(url, download_path='downloads', download_type='vi
                 if os.path.exists(file_path):
                     zipf.write(file_path, arcname=arcname)
         zip_buffer.seek(0)
-        return zip_buffer  # For Streamlit: pass this to `st.download_button`
+        return zip_buffer
 
     return downloaded_filepaths
