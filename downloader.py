@@ -2,6 +2,7 @@ import os
 import io
 import zipfile
 import yt_dlp
+import shutil
 
 QUALITY_OPTIONS = {
     'Best': 'best',
@@ -12,18 +13,19 @@ QUALITY_OPTIONS = {
 }
 
 def download_video_or_playlist(url, download_path='downloads', download_type='video', quality='Best', content_type='Playlist', zip_output=False):
-    if not os.path.exists(download_path):
-        os.makedirs(download_path)
+    if os.path.exists(download_path):
+        shutil.rmtree(download_path)
+    os.makedirs(download_path, exist_ok=True)
 
     is_playlist = (content_type == 'Playlist')
-    outtmpl = os.path.join(download_path, '%(title)s.%(ext)s')
+    ydl_format = 'bestaudio/best' if download_type == 'audio' else QUALITY_OPTIONS.get(quality, 'best')
 
     ydl_opts = {
-        'format': 'bestaudio/best' if download_type == 'audio' else QUALITY_OPTIONS.get(quality, 'best'),
-        'outtmpl': outtmpl,
+        'format': ydl_format,
+        'outtmpl': os.path.join(download_path, '%(title)s.%(ext)s'),
         'noplaylist': not is_playlist,
-        'ignoreerrors': True,
         'quiet': True,
+        'ignoreerrors': True,
     }
 
     if download_type == 'audio':
@@ -33,40 +35,26 @@ def download_video_or_playlist(url, download_path='downloads', download_type='vi
             'preferredquality': '192',
         }]
 
-    downloaded_filepaths = []
-
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
-            info_dict = ydl.extract_info(url, download=False)
-            if not info_dict:
-                raise ValueError("Could not retrieve info. Please check the URL.")
+            ydl.download([url])
         except Exception as e:
-            raise ValueError(f"Failed to extract info: {e}")
+            raise RuntimeError(f"Download failed: {e}")
 
-        entries = info_dict.get('entries', [info_dict]) if is_playlist else [info_dict]
+    # Collect downloaded files
+    downloaded_filepaths = []
+    for root, _, files in os.walk(download_path):
+        for file in files:
+            full_path = os.path.join(root, file)
+            downloaded_filepaths.append(full_path)
 
-        for entry in entries:
-            if not entry:
-                continue
-            try:
-                title = entry.get('title', 'video')
-                ext = 'mp3' if download_type == 'audio' else 'mp4'
-                filename = f"{title}.{ext}"
-                filepath = os.path.join(download_path, filename)
-
-                print(f'Downloading: {title}')
-                ydl.download([entry.get('webpage_url')])
-                downloaded_filepaths.append(filepath)
-            except Exception as e:
-                print(f'Error downloading {entry.get("title", "Unknown")}: {str(e)}')
-
+    # Zip files if needed
     if zip_output and downloaded_filepaths:
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
             for file_path in downloaded_filepaths:
                 arcname = os.path.basename(file_path)
-                if os.path.exists(file_path):
-                    zipf.write(file_path, arcname=arcname)
+                zipf.write(file_path, arcname=arcname)
         zip_buffer.seek(0)
         return zip_buffer
 
