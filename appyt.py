@@ -2,7 +2,7 @@ import streamlit as st
 import time
 from downloader import download_video_or_playlist
 
-st.set_page_config(page_title="YouTube Downloader", layout="centered")
+st.set_page_config(page_title=" Paradox-Player", layout="centered")
 st.title("YouTube Downloader")
 
 # Form layout for input
