@@ -1,5 +1,6 @@
 import express from 'express';
 import dns from 'dns';
+import { Readable } from 'stream';
 
 // Fix for Node 18+ preferring IPv6 in container environments and failing to fetch
 try {
@@ -11,95 +12,114 @@ try {
 // Ignore self-signed or invalid SSL certificates often present on hobby API mirrors
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-const HOSTS_POOL = [
-  'https://saavn.me',
-  'https://jiosaavnapi.vercel.app',
-  'https://jiosaavn-api-one.vercel.app',
-  'https://jiosaavn-api-liard.vercel.app',
-  'https://saavn.dev/api',
-  'https://saavn.dev',
-  'https://jiosaavn-api.vercel.app',
-  'https://jiosaavn-api-beta-three.vercel.app',
-  'https://jiosaavn-api-2.vercel.app',
-  'https://jiosaavnapi-nine.vercel.app',
-  'https://jiosaavn-api-v2.vercel.app'
-];
-
-async function fetchFromApi(relativeEndpoint: string): Promise<any> {
-  const endpoint = relativeEndpoint.startsWith('/') ? relativeEndpoint.slice(1) : relativeEndpoint;
-  const candidateUrls: string[] = [];
-
-  for (const host of HOSTS_POOL) {
-    if (host.endsWith('/api')) {
-      candidateUrls.push(`${host}/${endpoint}`);
-      const rawParent = host.replace(/\/api$/, '');
-      candidateUrls.push(`${rawParent}/${endpoint}`);
-    } else {
-      candidateUrls.push(`${host}/api/${endpoint}`);
-      candidateUrls.push(`${host}/${endpoint}`);
-    }
-  }
-
-  // Deduplicate Candidate URLs
-  const uniqueUrls = Array.from(new Set(candidateUrls));
-  const errors: string[] = [];
-
-  for (const url of uniqueUrls) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
-      
-      const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      
-      if (res.ok) {
-        const json = await res.json();
-        // Check if response indicates success or standard saavn API payload
-        const isValidPayload = json && (
-          Array.isArray(json) ||
-          json.success === true ||
-          json.status === 'SUCCESS' ||
-          json.data !== undefined ||
-          (json.id !== undefined && json.name !== undefined)
-        );
-        if (isValidPayload) {
-          console.log(`[Server Proxy] Loaded data successfully from mirror: ${url}`);
-          return json;
-        }
-      } else {
-        errors.push(`${url} (HTTP ${res.status})`);
-      }
-    } catch (err: any) {
-      // Quietly log to avoid false positive error monitoring tags
-      console.log(`[Server Proxy Check] Host not available: ${url}`);
-      errors.push(`${url} (Reason: unavailable)`);
-    }
-  }
-
-  throw new Error(`All ${uniqueUrls.length} JioSaavn API mirrors failed. Logged errors:\n` + errors.join('\n'));
-}
-
 const app = express();
 
-// Parse JSON requests
 app.use(express.json());
 
-// Saavn API Proxy route FIRST to bypass browser CORS constraints completely
-app.get('/api/saavn/*', async (req, res) => {
+// Set security headers to match Medplay
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  next();
+});
+
+// Proxy handler helper for streams
+async function proxyStream(req: express.Request, res: express.Response) {
+  const url = req.query.url as string;
+  if (!url) {
+    return res.status(400).send('No URL provided');
+  }
+
   try {
-    const pathSuffix = req.params[0] || req.path.replace(/^\/api\/saavn\//, '');
-    const queryParams = new URLSearchParams(req.query as any).toString();
-    const relativeEndpoint = pathSuffix + (queryParams ? `?${queryParams}` : '');
+    const headers: Record<string, string> = {};
+    if (req.headers.range) {
+      headers['Range'] = req.headers.range as string;
+    }
+
+    const upstreamResponse = await fetch(url, { headers });
+
+    res.status(upstreamResponse.status);
     
-    console.log(`[Server Proxy] Fetching mirror endpoint: ${relativeEndpoint}`);
-    const data = await fetchFromApi(relativeEndpoint);
-    res.json(data);
+    // Pass along headers
+    const contentType = upstreamResponse.headers.get('content-type');
+    if (contentType) res.setHeader('Content-Type', contentType);
+    
+    const contentRange = upstreamResponse.headers.get('content-range');
+    if (contentRange) res.setHeader('Content-Range', contentRange);
+    
+    res.setHeader('Accept-Ranges', 'bytes');
+    
+    const contentLength = upstreamResponse.headers.get('content-length');
+    if (contentLength) res.setHeader('Content-Length', contentLength);
+
+    if (upstreamResponse.body) {
+      // Use Readable.fromWeb to pipe the web stream to the Node response
+      const readable = Readable.fromWeb(upstreamResponse.body as any);
+      readable.pipe(res);
+    } else {
+      res.end();
+    }
   } catch (err: any) {
-    console.error(`[Server Proxy Error]:`, err.message || err);
-    res.status(502).json({
-      success: false,
-      message: err.message || String(err)
-    });
+    console.error('Proxy Error:', err);
+    res.status(500).send('Proxy Error');
+  }
+}
+
+app.get('/stream/', (req, res) => proxyStream(req, res));
+app.get('/streamer/', (req, res) => proxyStream(req, res));
+
+app.get('/image/', async (req, res) => {
+  const url = req.query.url as string;
+  if (!url) {
+    return res.status(400).send('No URL provided');
+  }
+
+  try {
+    const upstreamResponse = await fetch(url);
+    if (!upstreamResponse.ok) {
+      return res.redirect('https://placehold.co/150x150/18181b/ffffff?text=Paradox');
+    }
+
+    res.status(upstreamResponse.status);
+    const contentType = upstreamResponse.headers.get('content-type');
+    if (contentType) res.setHeader('Content-Type', contentType);
+    
+    const contentLength = upstreamResponse.headers.get('content-length');
+    if (contentLength) res.setHeader('Content-Length', contentLength);
+
+    if (upstreamResponse.body) {
+      const readable = Readable.fromWeb(upstreamResponse.body as any);
+      readable.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (err) {
+    res.redirect('https://placehold.co/150x150/18181b/ffffff?text=Paradox');
+  }
+});
+
+app.get('/download/', async (req, res) => {
+  const url = req.query.url as string;
+  const filename = req.query.filename as string || 'downloaded_song.mp3';
+  if (!url) {
+    return res.status(400).send('No URL provided');
+  }
+
+  try {
+    const upstreamResponse = await fetch(url);
+    res.status(upstreamResponse.status);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}.mp3"`);
+    res.setHeader('Content-Type', 'audio/mpeg');
+    
+    if (upstreamResponse.body) {
+      const readable = Readable.fromWeb(upstreamResponse.body as any);
+      readable.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (err: any) {
+    console.error('Download Error:', err);
+    res.status(500).send('Download Error');
   }
 });
 
