@@ -1,0 +1,6 @@
+{
+  "name": "Paradox Player",
+  "description": "A modern, ad-free client-side web music streaming player with local playlists, favorites, a queue system, customizable themes, and a responsive 9-band audio equalizer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

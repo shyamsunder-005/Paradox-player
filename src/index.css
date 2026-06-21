@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-border-color: var(--border-color);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+}
+
+:root {
+  --brand: #f97316; /* Immersive UI Sunset Orange/Amber as default */
+  --brand-hover: #fb923c;
+  --bg-primary: #050507;
+  --bg-secondary: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --text-primary: #e0e0e6;
+  --text-muted: #8e8e93;
+}
+
+[data-theme="midnight"] {
+  --brand: #a855f7;
+  --brand-hover: #c084fc;
+  --bg-primary: #050507;
+  --bg-secondary: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --text-primary: #e0e0e6;
+  --text-muted: #8e8e93;
+}
+
+[data-theme="sunset"] {
+  --brand: #f97316;
+  --brand-hover: #fb923c;
+  --bg-primary: #050507;
+  --bg-secondary: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --text-primary: #e0e0e6;
+  --text-muted: #8e8e93;
+}
+
+[data-theme="forest"] {
+  --brand: #10b981;
+  --brand-hover: #34d399;
+  --bg-primary: #030805;
+  --bg-secondary: rgba(255, 255, 255, 0.02);
+  --border-color: rgba(255, 255, 255, 0.04);
+  --text-primary: #f0fdf4;
+  --text-muted: #a0abaf;
+}
+
+[data-theme="ocean"] {
+  --brand: #0ea5e9;
+  --brand-hover: #38bdf8;
+  --bg-primary: #020610;
+  --bg-secondary: rgba(255, 255, 255, 0.02);
+  --border-color: rgba(255, 255, 255, 0.04);
+  --text-primary: #f0f9ff;
+  --text-muted: #a0b0bf;
+}
+
+[data-theme="monochrome"] {
+  --brand: #f4f4f5;
+  --brand-hover: #ffffff;
+  --bg-primary: #050507;
+  --bg-secondary: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --text-primary: #ffffff;
+  --text-muted: #8e8e93;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand);
+}
+
+/* Classmorphism custom classes */
+.glass {
+  background: rgba(15, 15, 15, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="sunset"] .glass {
+  background: rgba(31, 18, 10, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="forest"] .glass {
+  background: rgba(10, 37, 23, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="ocean"] .glass {
+  background: rgba(11, 28, 49, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="monochrome"] .glass {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Custom Keyframe Animations for Equalizer Bars */
+@keyframes bar-bounce-1 {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1.0); }
+}
+
+@keyframes bar-bounce-2 {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.2); }
+}
+
+@keyframes bar-bounce-3 {
+  0%, 100% { transform: scaleY(0.2); }
+  50% { transform: scaleY(0.9); }
+}
+
+.animate-pulse-bar1 {
+  animation: bar-bounce-1 0.8s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+.animate-pulse-bar2 {
+  animation: bar-bounce-2 0.6s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+.animate-pulse-bar3 {
+  animation: bar-bounce-3 0.7s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
