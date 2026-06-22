@@ -176,17 +176,22 @@ export default function FeedView({
     }
   };
 
+  const handleLoadMoreRef = useRef(handleLoadMore);
+  useEffect(() => {
+    handleLoadMoreRef.current = handleLoadMore;
+  }, [handleLoadMore]);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (isLoadingMore || !hasMoreResults || searchQuery.trim() === '' || isSearching) return;
+    if (!hasMoreResults || searchQuery.trim() === '' || isSearching) return;
 
     if (observerRef.current) observerRef.current.disconnect();
 
     observerRef.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        handleLoadMore();
+        handleLoadMoreRef.current();
       }
     }, { rootMargin: '100px' });
 
@@ -197,7 +202,7 @@ export default function FeedView({
     return () => {
       if (observerRef.current) observerRef.current.disconnect();
     };
-  }, [isLoadingMore, hasMoreResults, searchQuery, currentPage, isSearching]);
+  }, [hasMoreResults, searchQuery, isSearching]);
 
   // Sync activePlaylist when playlists prop changes
   useEffect(() => {
