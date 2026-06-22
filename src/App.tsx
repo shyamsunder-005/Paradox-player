@@ -4,6 +4,7 @@
  */
 
 import { NavigationSection, Song, Playlist } from './types';
+import { Disc } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import BottomNav from './components/BottomNav';
 import FeedView from './components/FeedView';
