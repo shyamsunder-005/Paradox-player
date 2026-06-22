@@ -72,9 +72,9 @@ async function proxyStream(req, res) {
     res.status(500).send("Proxy Error");
   }
 }
-app.get("/stream/", (req, res) => proxyStream(req, res));
-app.get("/streamer/", (req, res) => proxyStream(req, res));
-app.get("/image/", async (req, res) => {
+app.get(["/stream/", "/api/stream/"], (req, res) => proxyStream(req, res));
+app.get(["/streamer/", "/api/streamer/"], (req, res) => proxyStream(req, res));
+app.get(["/image/", "/api/image/"], async (req, res) => {
   const url = req.query.url;
   if (!url) {
     return res.status(400).send("No URL provided");
@@ -99,7 +99,7 @@ app.get("/image/", async (req, res) => {
     res.redirect("https://placehold.co/150x150/18181b/ffffff?text=Paradox");
   }
 });
-app.get("/download/", async (req, res) => {
+app.get(["/download/", "/api/download/"], async (req, res) => {
   const url = req.query.url;
   const filename = req.query.filename || "downloaded_song.mp3";
   if (!url) {

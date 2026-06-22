@@ -18,12 +18,14 @@ import PlayerBar from './components/PlayerBar';
 
 import { playerEngine, PlayerState, RepeatMode } from './playerEngine';
 import { downloadManager, DownloadState } from './downloadManager';
+import { 
   getPlaylists, savePlaylists, 
   getTheme, saveTheme,
   getAutoFillQueue, saveAutoFillQueue,
-  getAudioQuality, saveAudioQuality, AudioQuality,
+  getAudioQuality, saveAudioQuality,
   getAutoPlayEndless, saveAutoPlayEndless
 } from './storage';
+import type { AudioQuality } from './storage';
 import { getSongDetails } from './api';
 
 import { useState, useEffect } from 'react';

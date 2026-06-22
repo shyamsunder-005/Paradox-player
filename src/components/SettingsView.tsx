@@ -1,5 +1,5 @@
 import { Settings, Check, ListMusic, AudioWaveform, Infinity as InfinityIcon } from 'lucide-react';
-import { AudioQuality } from '../storage';
+import type { AudioQuality } from '../storage';
 
 interface SettingsViewProps {
   autoFillQueue: boolean;
