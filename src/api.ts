@@ -195,6 +195,26 @@ export async function getAlbumDetails(id: string): Promise<Album | null> {
   }
 }
 
+export async function getPlaylistDetails(id: string): Promise<Album | null> {
+  try {
+    const json = await fetchFromApi(`playlists?id=${id}`);
+    const data = json.data;
+    if (!data) return null;
+
+    return {
+      id: data.id || '',
+      name: unescapeHtml(data.name || 'Playlist'),
+      year: '',
+      image: data.image || [],
+      artists: { primary: [] },
+      songs: (data.songs || []).map((s: any) => cleanSong(s)),
+    };
+  } catch (err) {
+    console.error(`[Paradox Player] Failed to load details for playlist ${id}:`, err);
+    return null;
+  }
+}
+
 export async function getArtistDetails(id: string): Promise<ArtistDetails | null> {
   try {
     const json = await fetchFromApi(`artists?id=${id}`);

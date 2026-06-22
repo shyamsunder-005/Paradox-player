@@ -144,7 +144,7 @@ export default function SongCard({
         {/* Dynamic Context Menu Dropdown */}
         {showMenu && (
           <div 
-            className="absolute top-11 right-2 w-48 bg-bg-secondary border border-border-color rounded-xl shadow-xl py-1 z-30 font-sans text-xs text-text-primary"
+            className="absolute top-11 right-2 w-48 bg-bg-primary/90 backdrop-blur-xl border border-border-color rounded-xl shadow-2xl py-1 z-30 font-sans text-xs text-text-primary"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -300,7 +300,7 @@ export default function SongCard({
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 bottom-8 sm:bottom-auto sm:top-8 w-48 bg-bg-secondary border border-border-color rounded-xl shadow-xl py-1 z-30 font-sans text-xs text-text-primary select-none">
+            <div className="absolute right-0 bottom-8 sm:bottom-auto sm:top-8 w-48 bg-bg-primary/90 backdrop-blur-xl border border-border-color rounded-xl shadow-2xl py-1 z-30 font-sans text-xs text-text-primary select-none">
               <button
                 onClick={() => {
                   onAddToQueue();

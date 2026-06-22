@@ -55,7 +55,7 @@ export default function Sidebar({ currentSection, setSection }: SidebarProps) {
 
       {/* Footer Branding Info */}
       <div className="border-t border-border-color pt-4 font-mono text-[11px] text-text-muted space-y-1">
-        <div>Paradox Player v1.2</div>
+        <div>Paradox Player</div>
         <div className="text-[10px] opacity-75">100% Ad-Free Audio</div>
       </div>
     </aside>

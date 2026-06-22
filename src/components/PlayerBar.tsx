@@ -64,7 +64,7 @@ export default function PlayerBar({
   return (
     <div className="fixed bottom-0 left-0 right-0 h-20 md:h-24 glass border-t border-border-color z-40 flex flex-col justify-between select-none pb-safe">
       {/* Absolute Progress Scrubber for Mobile + Desktop */}
-      <div className="w-full h-1 relative group cursor-pointer">
+      <div className="w-full h-1 relative group cursor-pointer" title="Seek (Arrow Left/Right)">
         <input
           type="range"
           min="0"
@@ -154,7 +154,7 @@ export default function PlayerBar({
             <button
               onClick={onTogglePlay}
               className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-brand text-bg-primary hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg shadow-brand/10 cursor-pointer"
-              title={isPlaying ? 'Pause' : 'Play'}
+              title={isPlaying ? 'Pause (Spacebar)' : 'Play (Spacebar)'}
             >
               {isPlaying ? (
                 <Pause className="w-4 h-4 md:w-5 md:h-5 fill-current" />
@@ -202,7 +202,7 @@ export default function PlayerBar({
         {/* Volume slider & maximize */}
         <div className="flex items-center gap-4 text-text-muted max-w-[25%] shrink-0">
           <div className="hidden md:flex items-center gap-2">
-            <button onClick={toggleMute} className="p-1 hover:text-text-primary transition-colors">
+            <button onClick={toggleMute} className="p-1 hover:text-text-primary transition-colors" title={volume === 0 ? 'Unmute (M)' : 'Mute (M)'}>
               {volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
             <input
@@ -213,6 +213,7 @@ export default function PlayerBar({
               value={volume}
               onChange={handleVolumeChange}
               className="w-16 h-1 bg-white/10 rounded-full cursor-pointer outline-none accent-brand"
+              title="Volume (Arrow Up/Down)"
             />
           </div>
 

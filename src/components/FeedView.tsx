@@ -1,7 +1,7 @@
 import { Song, Playlist, Album, ArtistDetails, Artist } from '../types';
 import { 
   searchSongs, searchAlbums, searchArtists, 
-  getAlbumDetails, getArtistDetails, getBigImage, getMediumImage 
+  getAlbumDetails, getArtistDetails, getPlaylistDetails, getBigImage, getMediumImage 
 } from '../api';
 import SongCard from './SongCard';
 import { 
@@ -61,6 +61,27 @@ export default function FeedView({
   const [activeAlbum, setActiveAlbum] = useState<Album | null>(null);
   const [activeArtist, setActiveArtist] = useState<ArtistDetails | null>(null);
   const [isOverlayLoading, setIsOverlayLoading] = useState(false);
+
+  // Top Songs Feed
+  const [topSongs, setTopSongs] = useState<Song[]>([]);
+  const [isLoadingTop, setIsLoadingTop] = useState(false);
+
+  useEffect(() => {
+    async function loadTopSongs() {
+      setIsLoadingTop(true);
+      try {
+        const pl = await getPlaylistDetails('1134548194'); // India Superhits Top 50
+        if (pl && pl.songs) {
+          setTopSongs(pl.songs);
+        }
+      } catch (err) {
+        console.error('Failed to load top songs', err);
+      } finally {
+        setIsLoadingTop(false);
+      }
+    }
+    loadTopSongs();
+  }, []);
 
   // Debounce effect
   useEffect(() => {
@@ -400,7 +421,6 @@ export default function FeedView({
           {/* Main heading branding */}
           <div className="flex flex-col gap-1.5">
             <h2 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">Find your soundtrack</h2>
-            <p className="text-xs text-text-muted">Stream from over 15 million high-quality Cors-unlocked JioSaavn tracks</p>
           </div>
 
           {/* PLAYLISTS LINEUP */}
@@ -414,7 +434,6 @@ export default function FeedView({
               <div className="glass rounded-2xl p-6 border border-border-color flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="space-y-1 text-center md:text-left">
                   <h4 className="font-semibold text-sm text-text-primary">Create Your First Playlist</h4>
-                  <p className="text-xs text-text-muted">Gather your favorite loops together offline without hassle or cloud logging.</p>
                 </div>
                 
                 <form
@@ -539,10 +558,43 @@ export default function FeedView({
                   <span className="text-xs font-mono text-text-muted">Scanning JioSaavn database...</span>
                 </div>
               ) : searchQuery.trim() === '' ? (
-                // Landing state
-                <div className="flex flex-col items-center text-center justify-center py-10 text-text-muted font-sans space-y-2">
-                  <Disc className="w-12 h-12 stroke-1 text-text-muted/40 animate-spin-slow" />
-                  <p className="text-xs">Type a keyword to discover high-fidelity MP3 downloads & streams</p>
+                // Landing state (Top Songs Feed)
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-2 px-2">
+                    <Disc className="w-5 h-5 text-brand" />
+                    <h3 className="text-base font-semibold text-text-primary">Top Played Songs in India</h3>
+                  </div>
+                  {isLoadingTop ? (
+                    <div className="flex flex-col items-center justify-center py-10 text-text-muted font-sans space-y-2">
+                      <Disc className="w-8 h-8 stroke-1 text-text-muted/40 animate-spin-slow" />
+                      <p className="text-xs">Loading trending songs...</p>
+                    </div>
+                  ) : topSongs.length === 0 ? (
+                    <div className="flex flex-col items-center text-center justify-center py-10 text-text-muted font-sans space-y-2">
+                      <Disc className="w-12 h-12 stroke-1 text-text-muted/40 animate-spin-slow" />
+                      <p className="text-xs">Type a keyword to discover high-fidelity MP3 downloads & streams</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {topSongs.map((song) => (
+                        <SongCard
+                          key={song.id}
+                          song={song}
+                          layout="row"
+                          isActive={currentSong?.id === song.id}
+                          isPlaying={isPlaying}
+                          isFavorite={isSongFavorite(song.id)}
+                          onFavoriteToggle={() => onFavoriteToggle(song)}
+                          onPlayTrigger={() => onSetSongQueue(topSongs, topSongs.indexOf(song))}
+                          onAddToQueue={() => onAddToQueue(song)}
+                          onDownload={() => onDownloadSong(song)}
+                          playlists={playlists}
+                          onAddToPlaylist={(plId) => onAddToPlaylist(song.id, plId)}
+                          onCreatePlaylistAndAdd={(name) => onCreatePlaylistAndAdd(song.id, name)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : activeTab === 'songs' ? (
                 songResults.length === 0 ? (

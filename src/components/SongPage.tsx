@@ -182,7 +182,7 @@ export default function SongPage({
 
             {/* Custom Range Seeker */}
             <div className="space-y-2">
-              <div className="relative group w-full h-2 bg-white/5 rounded-full cursor-pointer overflow-hidden border border-white/5">
+              <div className="relative group w-full h-2 bg-white/5 rounded-full cursor-pointer overflow-hidden border border-white/5" title="Seek (Arrow Left/Right)">
                 <div 
                   className="h-full bg-brand rounded-full transition-all duration-100"
                   style={{ width: `${progressPercent}%` }}
@@ -227,6 +227,7 @@ export default function SongPage({
               <button
                 onClick={onTogglePlay}
                 className="w-14 h-14 rounded-full bg-brand text-bg-primary hover:scale-105 active:scale-95 flex items-center justify-center shadow-lg shadow-brand/15 transition-transform"
+                title={isPlaying ? 'Pause (Spacebar)' : 'Play (Spacebar)'}
               >
                 {isPlaying ? (
                   <Pause className="w-6 h-6 fill-current" />
@@ -269,6 +270,7 @@ export default function SongPage({
                   value={volume}
                   onChange={handleVolumeChange}
                   className="flex-1 h-1 bg-white/10 rounded-full cursor-pointer outline-none accent-brand"
+                  title="Volume (Arrow Up/Down)"
                 />
                 <span className="font-mono text-[10px] w-6 text-right">{(volume * 100).toFixed(0)}%</span>
               </div>
