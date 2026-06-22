@@ -359,7 +359,7 @@ export default function App() {
             favourites={favourites}
             onFavoriteToggle={handleFavoriteToggle}
             onSetSongQueue={handleSetSongQueue}
-            onAddSongs={() => setActiveSection('feed')}
+            onAddSongs={() => setSection('feed')}
           />
         );
       case 'favourites':
@@ -377,7 +377,7 @@ export default function App() {
             playlists={playlists}
             onAddToPlaylist={handleAddToPlaylist}
             onCreatePlaylistAndAdd={handleCreatePlaylistAndAdd}
-            onAddSongs={() => setActiveSection('feed')}
+            onAddSongs={() => setSection('feed')}
           />
         );
       case 'themes':
