@@ -50,6 +50,34 @@ export default function ThemesView({ currentTheme, onThemeChange }: ThemesViewPr
       accentClass: 'bg-zinc-100',
       colors: ['#050507', 'rgba(255,255,255,0.03)', '#f4f4f5', '#ffffff'],
     },
+    {
+      id: 'daylight',
+      name: 'Clean Daylight (Light)',
+      desc: 'Bright and airy clean light theme with a sharp amber sunset pop',
+      accentClass: 'bg-orange-500',
+      colors: ['#f8fafc', 'rgba(0,0,0,0.03)', '#f97316', '#0f172a'],
+    },
+    {
+      id: 'nordic',
+      name: 'Nordic Sky (Light)',
+      desc: 'Cool slate grays and crisp whites with a calming azure blue brand',
+      accentClass: 'bg-sky-600',
+      colors: ['#f1f5f9', 'rgba(0,0,0,0.04)', '#0284c7', '#1e293b'],
+    },
+    {
+      id: 'cherry',
+      name: 'Sakura Cherry (Light)',
+      desc: 'Warm and inviting rose-tinted backdrop with vivid crimson accents',
+      accentClass: 'bg-rose-600',
+      colors: ['#fff1f2', 'rgba(225,29,72,0.04)', '#e11d48', '#4c0519'],
+    },
+    {
+      id: 'crimson',
+      name: 'Vampire Crimson',
+      desc: 'Deep blood-red accents on a pure pitch black backdrop for night-owls',
+      accentClass: 'bg-red-500',
+      colors: ['#0a0202', 'rgba(255,255,255,0.03)', '#ef4444', '#fecaca'],
+    },
   ];
 
   return (

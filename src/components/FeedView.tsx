@@ -62,25 +62,38 @@ export default function FeedView({
   const [activeArtist, setActiveArtist] = useState<ArtistDetails | null>(null);
   const [isOverlayLoading, setIsOverlayLoading] = useState(false);
 
-  // Top Songs Feed
+  // Top Data Feeds
   const [topSongs, setTopSongs] = useState<Song[]>([]);
+  const [topAlbums, setTopAlbums] = useState<Album[]>([]);
+  const [topArtists, setTopArtists] = useState<any[]>([]);
   const [isLoadingTop, setIsLoadingTop] = useState(false);
 
   useEffect(() => {
-    async function loadTopSongs() {
+    async function loadTopData() {
       setIsLoadingTop(true);
       try {
-        const pl = await getPlaylistDetails('1134548194'); // India Superhits Top 50
+        const [pl, albumsRes, artistsRes] = await Promise.all([
+          getPlaylistDetails('1134548194'), // India Superhits Top 50
+          searchAlbums('Top Bollywood'),
+          searchArtists('Hits')
+        ]);
+        
         if (pl && pl.songs) {
           setTopSongs(pl.songs);
         }
+        if (albumsRes) {
+          setTopAlbums(albumsRes.slice(0, 16));
+        }
+        if (artistsRes) {
+          setTopArtists(artistsRes.slice(0, 15));
+        }
       } catch (err) {
-        console.error('Failed to load top songs', err);
+        console.error('Failed to load top data', err);
       } finally {
         setIsLoadingTop(false);
       }
     }
-    loadTopSongs();
+    loadTopData();
   }, []);
 
   // Debounce effect
@@ -623,7 +636,46 @@ export default function FeedView({
                   </div>
                 )
               ) : activeTab === 'albums' ? (
-                albumResults.length === 0 ? (
+                searchQuery.trim() === '' ? (
+                  // Landing state (Top Albums Feed)
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-center gap-2 px-2">
+                      <Disc className="w-5 h-5 text-brand" />
+                      <h3 className="text-base font-semibold text-text-primary">Top Albums in India</h3>
+                    </div>
+                    {isLoadingTop ? (
+                      <div className="flex flex-col items-center justify-center py-10 text-text-muted font-sans space-y-2">
+                        <Disc className="w-8 h-8 stroke-1 text-text-muted/40 animate-spin-slow" />
+                        <p className="text-xs">Loading top albums...</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {topAlbums.map((alb) => (
+                          <div
+                            key={alb.id}
+                            onClick={() => handleAlbumClick(alb.id)}
+                            className="group flex flex-col bg-bg-secondary hover:bg-white/5 border border-border-color rounded-2xl p-4 transition-all duration-300 cursor-pointer shadow-md select-none"
+                          >
+                            <div className="aspect-square w-full rounded-xl overflow-hidden mb-3 bg-bg-primary">
+                              <img
+                                src={getBigImage(alb.image)}
+                                alt={alb.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+                            <h4 className="font-semibold text-sm truncate text-text-primary" title={alb.name}>
+                              {alb.name}
+                            </h4>
+                            <p className="text-xs text-text-muted truncate mt-0.5">
+                              {alb.year || 'Album'}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : albumResults.length === 0 ? (
                   <div className="text-center py-16 text-sm text-text-muted border border-dashed border-border-color rounded-2xl">
                     No albums found matching "{searchQuery}".
                   </div>
@@ -655,7 +707,46 @@ export default function FeedView({
                 )
               ) : (
                 // Artists
-                artistResults.length === 0 ? (
+                searchQuery.trim() === '' ? (
+                  // Landing state (Top Artists Feed)
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-center gap-2 px-2">
+                      <Disc className="w-5 h-5 text-brand" />
+                      <h3 className="text-base font-semibold text-text-primary">Top Artists in India</h3>
+                    </div>
+                    {isLoadingTop ? (
+                      <div className="flex flex-col items-center justify-center py-10 text-text-muted font-sans space-y-2">
+                        <Disc className="w-8 h-8 stroke-1 text-text-muted/40 animate-spin-slow" />
+                        <p className="text-xs">Loading top artists...</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        {topArtists.map((art) => (
+                          <div
+                            key={art.id}
+                            onClick={() => handleArtistClick(art.id)}
+                            className="group flex flex-col items-center bg-bg-secondary hover:bg-white/5 border border-border-color hover:border-brand/35 rounded-2xl p-4 text-center transition-all duration-300 cursor-pointer shadow-md select-none"
+                          >
+                            <div className="relative w-20 h-20 rounded-full overflow-hidden mb-3 bg-bg-primary shadow-inner">
+                              <img
+                                src={getMediumImage(art.image)}
+                                alt={art.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                referrerPolicy="no-referrer"
+                              />
+                            </div>
+                            <h4 className="font-semibold text-xs text-text-primary truncate w-full" title={art.name}>
+                              {art.name}
+                            </h4>
+                            <span className="text-[10px] text-brand font-mono font-medium block mt-1 uppercase tracking-wider">
+                              {art.role || 'Artist'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : artistResults.length === 0 ? (
                   <div className="text-center py-16 text-sm text-text-muted border border-dashed border-border-color rounded-2xl">
                     No artists found matching "{searchQuery}".
                   </div>
