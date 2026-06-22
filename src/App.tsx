@@ -174,6 +174,7 @@ export default function App() {
   const handleThemeChange = (themeId: string) => {
     setActiveTheme(themeId);
     saveTheme(themeId);
+    document.documentElement.setAttribute('data-theme', themeId);
   };
 
   // 4. Background Track metadata resolvers for custom Playlists adds
