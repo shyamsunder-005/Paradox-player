@@ -15,7 +15,9 @@ interface FavoritesViewProps {
   onDownloadSongs: (songs: Song[], batchName?: string) => void;
   playlists: Playlist[];
   onAddToPlaylist: (songId: string, playlistId: string) => void;
+  onAddToPlaylist: (songId: string, playlistId: string) => void;
   onCreatePlaylistAndAdd: (songId: string, name: string) => void;
+  onAddSongs: () => void;
 }
 
 export default function FavoritesView({
@@ -29,8 +31,10 @@ export default function FavoritesView({
   onDownloadSong,
   onDownloadSongs,
   playlists,
+  playlists,
   onAddToPlaylist,
   onCreatePlaylistAndAdd,
+  onAddSongs,
 }: FavoritesViewProps) {
   
   // Calculate aggregate playtime
@@ -69,6 +73,12 @@ export default function FavoritesView({
               className="flex-1 md:flex-initial px-4 py-2 bg-white/5 border border-border-color text-text-muted hover:text-text-primary text-xs font-semibold rounded-xl hover:scale-[1.03] active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Download className="w-4 h-4" /> Download Folder
+            </button>
+            <button
+              onClick={onAddSongs}
+              className="flex-1 md:flex-initial px-4 py-2 bg-white/5 border border-border-color text-text-muted hover:text-text-primary text-xs font-semibold rounded-xl hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span className="text-lg leading-none mb-[2px]">+</span> Add Songs
             </button>
           </div>
         </div>

@@ -123,7 +123,7 @@ export default function SongCard({
               e.stopPropagation();
               onFavoriteToggle();
             }}
-            className={`p-1.5 rounded-lg backdrop-blur-md transition-colors ${
+            className={`p-1.5 rounded-lg backdrop-blur-md transition-all hover:scale-110 ${
               isFavorite ? 'bg-brand text-bg-primary' : 'bg-bg-primary/80 text-text-muted hover:text-text-primary'
             }`}
           >
@@ -135,7 +135,7 @@ export default function SongCard({
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-1.5 rounded-lg bg-bg-primary/80 text-text-muted hover:text-text-primary backdrop-blur-md transition-colors"
+            className="p-1.5 rounded-lg bg-bg-primary/80 text-text-muted hover:text-text-primary backdrop-blur-md transition-all hover:scale-110"
           >
             <MoreVertical className="w-3.5 h-3.5" />
           </button>
@@ -264,7 +264,7 @@ export default function SongCard({
         {/* Favorite Heart Trigger */}
         <button
           onClick={onFavoriteToggle}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`p-2 rounded-lg transition-all hover:scale-110 ${
             isFavorite ? 'text-brand' : 'text-text-muted hover:text-text-primary'
           }`}
         >
@@ -275,7 +275,7 @@ export default function SongCard({
         {onRemoveFromQueue ? (
           <button
             onClick={onRemoveFromQueue}
-            className="p-2 text-text-muted hover:text-red-400 rounded-lg transition-colors"
+            className="p-2 text-text-muted hover:text-red-400 rounded-lg transition-all hover:scale-110"
             title="Remove from queue"
           >
             <Trash2 className="w-4 h-4" />
@@ -283,7 +283,7 @@ export default function SongCard({
         ) : (
           <button
             onClick={onAddToQueue}
-            className="p-2 text-text-muted hover:text-brand rounded-lg transition-colors hidden sm:block"
+            className="p-2 text-text-muted hover:text-brand rounded-lg transition-all hover:scale-110 hidden sm:block"
             title="Add to queue"
           >
             <Plus className="w-4 h-4" />
@@ -294,7 +294,7 @@ export default function SongCard({
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="p-2 text-text-muted hover:text-text-primary rounded-lg transition-colors"
+            className="p-2 text-text-muted hover:text-text-primary rounded-lg transition-all hover:scale-110"
           >
             <MoreVertical className="w-4 h-4" />
           </button>

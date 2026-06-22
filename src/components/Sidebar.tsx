@@ -1,5 +1,5 @@
 import { NavigationSection } from '../types';
-import { Home, ListMusic, Heart, Palette, Info, Disc } from 'lucide-react';
+import { Home, ListMusic, Heart, Palette, Info, Disc, Settings } from 'lucide-react';
 
 interface SidebarProps {
   currentSection: NavigationSection;
@@ -13,6 +13,7 @@ export default function Sidebar({ currentSection, setSection }: SidebarProps) {
     { id: 'queue', name: 'Play Queue', icon: ListMusic },
     { id: 'favourites', name: 'Favorites', icon: Heart },
     { id: 'themes', name: 'App Themes', icon: Palette },
+    { id: 'settings', name: 'Settings', icon: Settings },
     { id: 'about', name: 'About App', icon: Info },
   ] as const;
 

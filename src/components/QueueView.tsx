@@ -23,6 +23,7 @@ interface QueueViewProps {
   favourites: Song[];
   onFavoriteToggle: (song: Song) => void;
   onSetSongQueue: (songs: Song[], playIndex?: number) => void;
+  onAddSongs: () => void;
 }
 
 export default function QueueView({
@@ -41,6 +42,7 @@ export default function QueueView({
   favourites,
   onFavoriteToggle,
   onSetSongQueue,
+  onAddSongs,
 }: QueueViewProps) {
   
   // Calculate total duration
@@ -111,6 +113,13 @@ export default function QueueView({
               className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-semibold rounded-xl active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-1 select-none cursor-pointer"
             >
               <Trash2 className="w-4 h-4" /> Clear
+            </button>
+            
+            <button
+              onClick={onAddSongs}
+              className="flex-1 md:flex-initial px-4 py-2 bg-white/5 border border-border-color text-text-muted hover:text-text-primary text-xs font-semibold rounded-xl hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span className="text-lg leading-none mb-[2px]">+</span> Add Songs
             </button>
           </div>
         </div>

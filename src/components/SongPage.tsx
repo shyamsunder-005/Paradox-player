@@ -208,7 +208,7 @@ export default function SongPage({
             <div className="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-border-color">
               <button
                 onClick={onShuffleToggle}
-                className={`p-2.5 rounded-xl transition-all ${
+                className={`p-2.5 rounded-xl transition-all cursor-pointer hover:scale-110 ${
                   isShuffle ? 'text-brand bg-brand/5' : 'text-text-muted hover:text-text-primary'
                 }`}
                 title="Shuffle queue list"
@@ -218,7 +218,7 @@ export default function SongPage({
 
               <button
                 onClick={onPrevious}
-                className="p-2.5 text-text-muted hover:text-text-primary active:scale-95 transition-transform"
+                className="p-2.5 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
                 title="Play previous"
               >
                 <SkipBack className="w-6 h-6" />
@@ -226,7 +226,7 @@ export default function SongPage({
 
               <button
                 onClick={onTogglePlay}
-                className="w-14 h-14 rounded-full bg-brand text-bg-primary hover:scale-105 active:scale-95 flex items-center justify-center shadow-lg shadow-brand/15 transition-transform"
+                className="w-14 h-14 rounded-full bg-brand text-bg-primary hover:scale-110 active:scale-95 flex items-center justify-center shadow-lg shadow-brand/15 transition-all cursor-pointer"
                 title={isPlaying ? 'Pause (Spacebar)' : 'Play (Spacebar)'}
               >
                 {isPlaying ? (
@@ -238,7 +238,7 @@ export default function SongPage({
 
               <button
                 onClick={onNext}
-                className="p-2.5 text-text-muted hover:text-text-primary active:scale-95 transition-transform"
+                className="p-2.5 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
                 title="Play next"
               >
                 <SkipForward className="w-6 h-6" />
@@ -246,7 +246,7 @@ export default function SongPage({
 
               <button
                 onClick={onRepeatToggle}
-                className={`p-2.5 rounded-xl transition-all relative ${
+                className={`p-2.5 rounded-xl transition-all relative cursor-pointer hover:scale-110 ${
                   repeatMode !== 'off' ? 'text-brand bg-brand/5' : 'text-text-muted hover:text-text-primary'
                 }`}
                 title={`Repeat queue: ${repeatMode}`}

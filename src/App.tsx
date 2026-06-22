@@ -11,6 +11,7 @@ import SongPage from './components/SongPage';
 import QueueView from './components/QueueView';
 import FavoritesView from './components/FavoritesView';
 import ThemesView from './components/ThemesView';
+import SettingsView from './components/SettingsView';
 import AboutView from './components/AboutView';
 import DownloadModal from './components/DownloadModal';
 import PlayerBar from './components/PlayerBar';
@@ -20,7 +21,8 @@ import { downloadManager, DownloadState } from './downloadManager';
 import { 
   getFavourites, saveFavourites, 
   getPlaylists, savePlaylists, 
-  getTheme, saveTheme 
+  getTheme, saveTheme,
+  getAutoFillQueue, saveAutoFillQueue
 } from './storage';
 import { getSongDetails } from './api';
 
@@ -33,6 +35,7 @@ export default function App() {
   const [favourites, setFavourites] = useState<Song[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [activeTheme, setActiveTheme] = useState<string>('midnight');
+  const [autoFillQueue, setAutoFillQueue] = useState<boolean>(true);
 
   // 1. Subscribe to Player Engine & Background Download State listeners on mount
   useEffect(() => {
@@ -51,6 +54,8 @@ export default function App() {
     const savedTheme = getTheme();
     setActiveTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
+
+    setAutoFillQueue(getAutoFillQueue());
 
     return () => {
       unsubPlayer();
@@ -98,7 +103,7 @@ export default function App() {
 
   // 3. Core Handler Routines
   const handlePlaySong = (song: Song, queue?: Song[]) => {
-    playerEngine.playSong(song, queue);
+    playerEngine.playSong(song, autoFillQueue ? queue : undefined);
   };
 
   const handleSetSongQueue = (songs: Song[], playIndex = 0) => {
@@ -175,6 +180,11 @@ export default function App() {
     setActiveTheme(themeId);
     saveTheme(themeId);
     document.documentElement.setAttribute('data-theme', themeId);
+  };
+
+  const handleAutoFillQueueToggle = (val: boolean) => {
+    setAutoFillQueue(val);
+    saveAutoFillQueue(val);
   };
 
   // 4. Background Track metadata resolvers for custom Playlists adds
@@ -331,6 +341,7 @@ export default function App() {
             favourites={favourites}
             onFavoriteToggle={handleFavoriteToggle}
             onSetSongQueue={handleSetSongQueue}
+            onAddSongs={() => setActiveSection('feed')}
           />
         );
       case 'favourites':
@@ -348,6 +359,7 @@ export default function App() {
             playlists={playlists}
             onAddToPlaylist={handleAddToPlaylist}
             onCreatePlaylistAndAdd={handleCreatePlaylistAndAdd}
+            onAddSongs={() => setActiveSection('feed')}
           />
         );
       case 'themes':
@@ -355,6 +367,13 @@ export default function App() {
           <ThemesView
             currentTheme={activeTheme}
             onThemeChange={handleThemeChange}
+          />
+        );
+      case 'settings':
+        return (
+          <SettingsView
+            autoFillQueue={autoFillQueue}
+            onAutoFillQueueToggle={handleAutoFillQueueToggle}
           />
         );
       case 'about':

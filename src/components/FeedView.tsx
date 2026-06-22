@@ -49,6 +49,9 @@ export default function FeedView({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'songs' | 'albums' | 'artists'>('songs');
   const [isSearching, setIsSearching] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreResults, setHasMoreResults] = useState(true);
 
   // Results
   const [songResults, setSongResults] = useState<Song[]>([]);
@@ -107,17 +110,23 @@ export default function FeedView({
     }
 
     setIsSearching(true);
+    setCurrentPage(1);
+    setHasMoreResults(true);
+
     const timer = setTimeout(async () => {
       try {
         if (activeTab === 'songs') {
-          const res = await searchSongs(searchQuery);
+          const res = await searchSongs(searchQuery, 1);
           setSongResults(res);
+          setHasMoreResults(res.length > 0);
         } else if (activeTab === 'albums') {
-          const res = await searchAlbums(searchQuery);
+          const res = await searchAlbums(searchQuery, 1);
           setAlbumResults(res);
+          setHasMoreResults(res.length > 0);
         } else if (activeTab === 'artists') {
-          const res = await searchArtists(searchQuery);
+          const res = await searchArtists(searchQuery, 1);
           setArtistResults(res);
+          setHasMoreResults(res.length > 0);
         }
       } catch (err) {
         console.error('Search query fetch failed:', err);
@@ -128,6 +137,80 @@ export default function FeedView({
 
     return () => clearTimeout(timer);
   }, [searchQuery, activeTab]);
+
+  const handleLoadMore = async () => {
+    if (!hasMoreResults || isLoadingMore || !searchQuery.trim()) return;
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+    
+    try {
+      if (activeTab === 'songs') {
+        const res = await searchSongs(searchQuery, nextPage);
+        if (res.length > 0) {
+          setSongResults(prev => [...prev, ...res]);
+          setCurrentPage(nextPage);
+        } else {
+          setHasMoreResults(false);
+        }
+      } else if (activeTab === 'albums') {
+        const res = await searchAlbums(searchQuery, nextPage);
+        if (res.length > 0) {
+          setAlbumResults(prev => [...prev, ...res]);
+          setCurrentPage(nextPage);
+        } else {
+          setHasMoreResults(false);
+        }
+      } else if (activeTab === 'artists') {
+        const res = await searchArtists(searchQuery, nextPage);
+        if (res.length > 0) {
+          setArtistResults(prev => [...prev, ...res]);
+          setCurrentPage(nextPage);
+        } else {
+          setHasMoreResults(false);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load more results:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isLoadingMore || !hasMoreResults || searchQuery.trim() === '') return;
+
+    if (observerRef.current) observerRef.current.disconnect();
+
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        handleLoadMore();
+      }
+    }, { rootMargin: '100px' });
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) observerRef.current.disconnect();
+    };
+  }, [isLoadingMore, hasMoreResults, searchQuery, currentPage]);
+
+  // Sync activePlaylist when playlists prop changes
+  useEffect(() => {
+    if (activePlaylist && subView === 'playlist') {
+      const updated = playlists.find(p => p.id === activePlaylist.id);
+      if (updated) {
+        setActivePlaylist(updated);
+      } else {
+        setActivePlaylist(null);
+        setSubView('main');
+      }
+    }
+  }, [playlists]);
 
   // Click Handlers
   const handlePlaylistClick = (playlist: Playlist) => {
@@ -570,49 +653,49 @@ export default function FeedView({
                   <Disc className="w-8 h-8 text-brand animate-spin" />
                   <span className="text-xs font-mono text-text-muted">Scanning JioSaavn database...</span>
                 </div>
-              ) : searchQuery.trim() === '' ? (
-                // Landing state (Top Songs Feed)
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-2 px-2">
-                    <Disc className="w-5 h-5 text-brand" />
-                    <h3 className="text-base font-semibold text-text-primary">Top Played Songs in India</h3>
-                  </div>
-                  {isLoadingTop ? (
-                    <div className="flex flex-col items-center justify-center py-10 text-text-muted font-sans space-y-2">
-                      <Disc className="w-8 h-8 stroke-1 text-text-muted/40 animate-spin-slow" />
-                      <p className="text-xs">Loading trending songs...</p>
-                    </div>
-                  ) : topSongs.length === 0 ? (
-                    <div className="flex flex-col items-center text-center justify-center py-10 text-text-muted font-sans space-y-2">
-                      <Disc className="w-12 h-12 stroke-1 text-text-muted/40 animate-spin-slow" />
-                      <p className="text-xs">Type a keyword to discover high-fidelity MP3 downloads & streams</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 gap-2.5">
-                      {topSongs.map((song) => (
-                        <SongCard
-                          key={song.id}
-                          song={song}
-                          layout="row"
-                          isActive={currentSong?.id === song.id}
-                          isPlaying={isPlaying}
-                          isFavorite={isSongFavorite(song.id)}
-                          onFavoriteToggle={() => onFavoriteToggle(song)}
-                          onPlayTrigger={() => onSetSongQueue(topSongs, topSongs.indexOf(song))}
-                          onAddToQueue={() => onAddToQueue(song)}
-                          onDownload={() => onDownloadSong(song)}
-                          playlists={playlists}
-                          onAddToPlaylist={(plId) => onAddToPlaylist(song.id, plId)}
-                          onCreatePlaylistAndAdd={(name) => onCreatePlaylistAndAdd(song.id, name)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
               ) : activeTab === 'songs' ? (
-                songResults.length === 0 ? (
-                  <div className="text-center py-12 text-sm text-text-muted border border-dashed border-border-color rounded-2xl">
-                    No songs found. Try searching for other keywords.
+                searchQuery.trim() === '' ? (
+                  // Landing state (Top Songs Feed)
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-center gap-2 px-2">
+                      <Disc className="w-5 h-5 text-brand" />
+                      <h3 className="text-base font-semibold text-text-primary">Top Played Songs in India</h3>
+                    </div>
+                    {isLoadingTop ? (
+                      <div className="flex flex-col items-center justify-center py-10 text-text-muted font-sans space-y-2">
+                        <Disc className="w-8 h-8 stroke-1 text-text-muted/40 animate-spin-slow" />
+                        <p className="text-xs">Loading trending songs...</p>
+                      </div>
+                    ) : topSongs.length === 0 ? (
+                      <div className="flex flex-col items-center text-center justify-center py-10 text-text-muted font-sans space-y-2">
+                        <Disc className="w-12 h-12 stroke-1 text-text-muted/40 animate-spin-slow" />
+                        <p className="text-xs">Type a keyword to discover high-fidelity MP3 downloads & streams</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-2.5">
+                        {topSongs.map((song) => (
+                          <SongCard
+                            key={song.id}
+                            song={song}
+                            layout="row"
+                            isActive={currentSong?.id === song.id}
+                            isPlaying={isPlaying}
+                            isFavorite={isSongFavorite(song.id)}
+                            onFavoriteToggle={() => onFavoriteToggle(song)}
+                            onPlayTrigger={() => onSetSongQueue(topSongs, topSongs.indexOf(song))}
+                            onAddToQueue={() => onAddToQueue(song)}
+                            onDownload={() => onDownloadSong(song)}
+                            playlists={playlists}
+                            onAddToPlaylist={(plId) => onAddToPlaylist(song.id, plId)}
+                            onCreatePlaylistAndAdd={(name) => onCreatePlaylistAndAdd(song.id, name)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : songResults.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-text-muted">
+                    No songs found matching "{searchQuery}".
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-2.5">
@@ -776,6 +859,16 @@ export default function FeedView({
                     ))}
                   </div>
                 )
+              )}
+
+              {searchQuery.trim() !== '' && !isSearching && hasMoreResults && (
+                <div ref={loadMoreRef} className="flex justify-center pt-8 pb-4">
+                  {isLoadingMore && (
+                    <div className="px-6 py-2.5 rounded-xl bg-white/5 border border-border-color text-sm font-semibold text-text-primary flex items-center gap-2">
+                      <Disc className="w-4 h-4 animate-spin text-brand" /> Loading more...
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 

@@ -72,11 +72,11 @@ export default function ThemesView({ currentTheme, onThemeChange }: ThemesViewPr
       colors: ['#fff1f2', 'rgba(225,29,72,0.04)', '#e11d48', '#4c0519'],
     },
     {
-      id: 'crimson',
-      name: 'Vampire Crimson',
-      desc: 'Deep blood-red accents on a pure pitch black backdrop for night-owls',
-      accentClass: 'bg-red-500',
-      colors: ['#0a0202', 'rgba(255,255,255,0.03)', '#ef4444', '#fecaca'],
+      id: 'cyberpunk',
+      name: 'Cyberpunk Neon',
+      desc: 'High contrast electric neon yellow accents with deep matrix greens',
+      accentClass: 'bg-yellow-400',
+      colors: ['#09090b', 'rgba(255,255,255,0.03)', '#facc15', '#a3e635'],
     },
   ];
 
@@ -91,9 +91,6 @@ export default function ThemesView({ currentTheme, onThemeChange }: ThemesViewPr
           </div>
           <div>
             <h2 className="text-xl font-bold tracking-tight">App Interface Themes</h2>
-            <p className="text-xs text-text-muted mt-0.5">
-              Personalize Tunely with responsive, eye-safe, premium dark-first presets.
-            </p>
           </div>
         </div>
 

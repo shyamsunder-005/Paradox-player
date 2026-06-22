@@ -6,6 +6,7 @@ const KEYS = {
   QUEUE: 'tunely_play_queue_info',
   CURRENT_THEME: 'tunely_active_theme_id',
   HISTORY: 'tunely_play_history_info',
+  AUTOFILL_QUEUE: 'tunely_autofill_queue',
 };
 
 function safeGet(key: string, defaultValue: any): any {
@@ -73,4 +74,12 @@ export function getHistory(): Song[] {
 
 export function saveHistory(songs: Song[]): void {
   safeSet(KEYS.HISTORY, songs);
+}
+
+export function getAutoFillQueue(): boolean {
+  return safeGet(KEYS.AUTOFILL_QUEUE, true);
+}
+
+export function saveAutoFillQueue(val: boolean): void {
+  safeSet(KEYS.AUTOFILL_QUEUE, val);
 }

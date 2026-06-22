@@ -100,14 +100,14 @@
   --text-muted: #881337;
 }
 
-[data-theme="crimson"] {
-  --brand: #ef4444;
-  --brand-hover: #f87171;
-  --bg-primary: #0a0202;
+[data-theme="cyberpunk"] {
+  --brand: #facc15;
+  --brand-hover: #fef08a;
+  --bg-primary: #09090b;
   --bg-secondary: rgba(255, 255, 255, 0.03);
   --border-color: rgba(255, 255, 255, 0.05);
-  --text-primary: #fecaca;
-  --text-muted: #dc2626;
+  --text-primary: #a3e635;
+  --text-muted: #84cc16;
 }
 
 /* Custom Scrollbar */

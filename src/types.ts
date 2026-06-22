@@ -62,7 +62,7 @@ export interface Playlist {
   createdAt: number;
 }
 
-export type NavigationSection = 'feed' | 'song-page' | 'queue' | 'favourites' | 'themes' | 'about';
+export type NavigationSection = 'feed' | 'song-page' | 'queue' | 'favourites' | 'themes' | 'about' | 'settings';
 
 export interface ThemeConfig {
   id: string;

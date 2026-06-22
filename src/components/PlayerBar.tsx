@@ -72,7 +72,7 @@ export default function PlayerBar({
           step="0.01"
           value={progressPercent}
           onChange={handleSeekChange}
-          className="absolute top-0 left-0 w-full h-1 h-hover:h-2 opacity-0 group-hover:opacity-100 cursor-pointer z-20 outline-none accent-brand"
+          className="absolute top-0 left-0 w-full h-1 group-hover:h-2 opacity-0 cursor-pointer z-20 outline-none"
           style={{ appearance: 'none', background: 'transparent' }}
         />
         {/* Track Visual */}
@@ -81,7 +81,7 @@ export default function PlayerBar({
             className="h-full bg-brand relative"
             style={{ width: `${progressPercent}%` }}
           >
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-brand shadow shadow-brand/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function PlayerBar({
               e.stopPropagation();
               onFavoriteToggle();
             }}
-            className={`p-2 rounded-xl transition-colors hidden sm:block ${
+            className={`p-2 rounded-xl transition-all cursor-pointer hover:scale-110 hidden sm:block ${
               isFavorite ? 'text-brand' : 'text-text-muted hover:text-text-primary'
             }`}
           >
@@ -133,7 +133,7 @@ export default function PlayerBar({
             {/* Shuffle Toggle */}
             <button
               onClick={onShuffleToggle}
-              className={`p-2 rounded-xl transition-colors ${
+              className={`p-2 rounded-xl transition-all cursor-pointer hover:scale-110 ${
                 isShuffle ? 'text-brand' : 'text-text-muted hover:text-text-primary'
               }`}
               title="Shuffle"
@@ -144,7 +144,7 @@ export default function PlayerBar({
             {/* Back Arrow */}
             <button
               onClick={onPrevious}
-              className="p-2 text-text-muted hover:text-text-primary active:scale-95 transition-transform"
+              className="p-2 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
               title="Previous song"
             >
               <SkipBack className="w-5 h-5 md:w-6 md:h-6" />
@@ -166,7 +166,7 @@ export default function PlayerBar({
             {/* Skip Arrow */}
             <button
               onClick={onNext}
-              className="p-2 text-text-muted hover:text-text-primary active:scale-95 transition-transform"
+              className="p-2 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
               title="Next song"
             >
               <SkipForward className="w-5 h-5 md:w-6 md:h-6" />
@@ -175,7 +175,7 @@ export default function PlayerBar({
             {/* Repeat Toggle */}
             <button
               onClick={onRepeatToggle}
-              className={`p-2 rounded-xl transition-colors relative ${
+              className={`p-2 rounded-xl transition-all relative cursor-pointer hover:scale-110 ${
                 repeatMode !== 'off' ? 'text-brand' : 'text-text-muted hover:text-text-primary'
               }`}
               title={`Repeat: ${repeatMode}`}
@@ -202,7 +202,7 @@ export default function PlayerBar({
         {/* Volume slider & maximize */}
         <div className="flex items-center gap-4 text-text-muted max-w-[25%] shrink-0">
           <div className="hidden md:flex items-center gap-2">
-            <button onClick={toggleMute} className="p-1 hover:text-text-primary transition-colors" title={volume === 0 ? 'Unmute (M)' : 'Mute (M)'}>
+            <button onClick={toggleMute} className="p-1 hover:text-text-primary hover:scale-110 transition-all cursor-pointer" title={volume === 0 ? 'Unmute (M)' : 'Mute (M)'}>
               {volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
             <input
@@ -219,7 +219,7 @@ export default function PlayerBar({
 
           <button 
             onClick={onOpenSongPage}
-            className="p-2 hover:text-text-primary active:scale-95 transition-all text-text-muted" 
+            className="p-2 hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all text-text-muted" 
             title="Open Full Player Page"
           >
             <Maximize2 className="w-4 h-4 md:w-5 md:h-5 text-brand" />
