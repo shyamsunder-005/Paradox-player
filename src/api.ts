@@ -70,10 +70,10 @@ export function cleanSong(song: any): Song {
   };
 }
 
-export async function searchSongs(query: string, page = 1): Promise<Song[]> {
+export async function searchSongs(query: string, page = 1, limit = 50): Promise<Song[]> {
   if (!query.trim()) return [];
   try {
-    const json = await fetchFromApi(`search/songs?query=${encodeURIComponent(query)}&page=${page}`);
+    const json = await fetchFromApi(`search/songs?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
     const results = json.data?.results || json.data || [];
     return results.map((s: any) => cleanSong(s));
   } catch (err) {
@@ -82,10 +82,10 @@ export async function searchSongs(query: string, page = 1): Promise<Song[]> {
   }
 }
 
-export async function searchAlbums(query: string, page = 1): Promise<Album[]> {
+export async function searchAlbums(query: string, page = 1, limit = 50): Promise<Album[]> {
   if (!query.trim()) return [];
   try {
-    const json = await fetchFromApi(`search/albums?query=${encodeURIComponent(query)}&page=${page}`);
+    const json = await fetchFromApi(`search/albums?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
     const results = json.data?.results || json.data || [];
     return results.map((alb: any) => ({
       id: alb.id || '',
@@ -105,10 +105,10 @@ export async function searchAlbums(query: string, page = 1): Promise<Album[]> {
   }
 }
 
-export async function searchArtists(query: string, page = 1): Promise<any[]> {
+export async function searchArtists(query: string, page = 1, limit = 50): Promise<any[]> {
   if (!query.trim()) return [];
   try {
-    const json = await fetchFromApi(`search/artists?query=${encodeURIComponent(query)}&page=${page}`);
+    const json = await fetchFromApi(`search/artists?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
     const results = json.data?.results || json.data || [];
     return results.map((art: any) => ({
       id: art.id || '',

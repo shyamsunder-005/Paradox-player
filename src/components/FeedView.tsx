@@ -77,18 +77,18 @@ export default function FeedView({
       try {
         const [pl, albumsRes, artistsRes] = await Promise.all([
           getPlaylistDetails('1134548194'), // India Superhits Top 50
-          searchAlbums('Top Bollywood'),
-          searchArtists('Hits')
+          searchAlbums('Top Bollywood', 1, 50),
+          searchArtists('Hits', 1, 50)
         ]);
         
         if (pl && pl.songs) {
           setTopSongs(pl.songs);
         }
         if (albumsRes) {
-          setTopAlbums(albumsRes.slice(0, 16));
+          setTopAlbums(albumsRes);
         }
         if (artistsRes) {
-          setTopArtists(artistsRes.slice(0, 15));
+          setTopArtists(artistsRes);
         }
       } catch (err) {
         console.error('Failed to load top data', err);
@@ -848,7 +848,7 @@ export default function FeedView({
               )}
 
               {searchQuery.trim() !== '' && !isSearching && hasMoreResults && (
-                <div ref={loadMoreRef} className="flex justify-center pt-8 pb-4">
+                <div className="flex justify-center pt-8 pb-4">
                   {isLoadingMore && (
                     <div className="px-6 py-2.5 rounded-xl bg-white/5 border border-border-color text-sm font-semibold text-text-primary flex items-center gap-2">
                       <Disc className="w-4 h-4 animate-spin text-brand" /> Loading more...
