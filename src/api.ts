@@ -6,7 +6,7 @@ import { Song, Album, ArtistDetails, SongImage } from './types';
  */
 async function fetchFromApi(relativeEndpoint: string): Promise<any> {
   const endpoint = relativeEndpoint.startsWith('/') ? relativeEndpoint.slice(1) : relativeEndpoint;
-  const url = `https://api-medplay.vercel.app/api/${endpoint}`;
+  const url = `https://saavn.sumit.co/api/${endpoint}`;
   
   const res = await fetch(url);
   if (!res.ok) {
@@ -234,8 +234,8 @@ export async function getArtistDetails(id: string): Promise<ArtistDetails | null
 export function getBigImage(images: SongImage[] | undefined): string {
   if (!images || images.length === 0) return 'https://placehold.co/500x500/18181b/ffffff?text=Tunely';
   const ideal = images.find((img) => img.quality === '500x500' || img.quality === 'large');
-  if (ideal) return `https://medplay.vercel.app/image/?url=${encodeURIComponent(ideal.url)}`;
-  return `https://medplay.vercel.app/image/?url=${encodeURIComponent(images[images.length - 1].url)}`;
+  if (ideal) return `/api/image/?url=${encodeURIComponent(ideal.url)}`;
+  return `/api/image/?url=${encodeURIComponent(images[images.length - 1].url)}`;
 }
 
 /**
@@ -244,8 +244,8 @@ export function getBigImage(images: SongImage[] | undefined): string {
 export function getMediumImage(images: SongImage[] | undefined): string {
   if (!images || images.length === 0) return 'https://placehold.co/150x150/18181b/ffffff?text=Tunely';
   const ideal = images.find((img) => img.quality === '150x150' || img.quality === 'medium');
-  if (ideal) return `https://medplay.vercel.app/image/?url=${encodeURIComponent(ideal.url)}`;
-  return `https://medplay.vercel.app/image/?url=${encodeURIComponent(images[0].url)}`;
+  if (ideal) return `/api/image/?url=${encodeURIComponent(ideal.url)}`;
+  return `/api/image/?url=${encodeURIComponent(images[0].url)}`;
 }
 
 /**
@@ -259,5 +259,5 @@ export function getPlaybackUrl(song: Song): string {
     const rateB = parseInt(b.quality.replace(/[^0-9]/g, ''), 10) || 0;
     return rateB - rateA; // Descending
   });
-  return options[0]?.url ? `https://medplay.vercel.app/stream/?url=${encodeURIComponent(options[0].url)}` : '';
+  return options[0]?.url ? `/api/stream/?url=${encodeURIComponent(options[0].url)}` : '';
 }

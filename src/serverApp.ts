@@ -65,10 +65,10 @@ async function proxyStream(req: express.Request, res: express.Response) {
   }
 }
 
-app.get('/stream/', (req, res) => proxyStream(req, res));
-app.get('/streamer/', (req, res) => proxyStream(req, res));
+app.get(['/stream/', '/api/stream/'], (req, res) => proxyStream(req, res));
+app.get(['/streamer/', '/api/streamer/'], (req, res) => proxyStream(req, res));
 
-app.get('/image/', async (req, res) => {
+app.get(['/image/', '/api/image/'], async (req, res) => {
   const url = req.query.url as string;
   if (!url) {
     return res.status(400).send('No URL provided');
@@ -98,7 +98,7 @@ app.get('/image/', async (req, res) => {
   }
 });
 
-app.get('/download/', async (req, res) => {
+app.get(['/download/', '/api/download/'], async (req, res) => {
   const url = req.query.url as string;
   const filename = req.query.filename as string || 'downloaded_song.mp3';
   if (!url) {
