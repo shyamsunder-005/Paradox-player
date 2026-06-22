@@ -197,9 +197,9 @@ export async function getAlbumDetails(id: string): Promise<Album | null> {
   }
 }
 
-export async function getPlaylistDetails(id: string): Promise<Album | null> {
+export async function getPlaylistDetails(id: string, limit: number = 50): Promise<Album | null> {
   try {
-    const json = await fetchFromApi(`playlists?id=${id}`);
+    const json = await fetchFromApi(`playlists?id=${id}&limit=${limit}`);
     const data = json.data;
     if (!data) return null;
 

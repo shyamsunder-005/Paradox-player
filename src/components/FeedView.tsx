@@ -176,33 +176,14 @@ export default function FeedView({
     }
   };
 
-  const handleLoadMoreRef = useRef(handleLoadMore);
-  useEffect(() => {
-    handleLoadMoreRef.current = handleLoadMore;
-  }, [handleLoadMore]);
-
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!hasMoreResults || searchQuery.trim() === '' || isSearching) return;
-
-    if (observerRef.current) observerRef.current.disconnect();
-
-    observerRef.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        handleLoadMoreRef.current();
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop - clientHeight < 150) {
+      if (!isLoadingMore && hasMoreResults && searchQuery.trim() !== '') {
+        handleLoadMore();
       }
-    }, { rootMargin: '100px' });
-
-    if (loadMoreRef.current) {
-      observerRef.current.observe(loadMoreRef.current);
     }
-
-    return () => {
-      if (observerRef.current) observerRef.current.disconnect();
-    };
-  }, [hasMoreResults, searchQuery, isSearching]);
+  };
 
   // Sync activePlaylist when playlists prop changes
   useEffect(() => {
@@ -267,7 +248,7 @@ export default function FeedView({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-40 md:pb-32 font-sans select-none text-text-primary">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-40 md:pb-32 font-sans select-none text-text-primary" onScroll={handleScroll}>
       
       {/* 1. PLAYLIST OVERLAY */}
       {subView === 'playlist' && activePlaylist && (
@@ -664,7 +645,7 @@ export default function FeedView({
                   <div className="space-y-4 pt-4">
                     <div className="flex items-center gap-2 px-2">
                       <Disc className="w-5 h-5 text-brand" />
-                      <h3 className="text-base font-semibold text-text-primary">Top Played Songs in India</h3>
+                      <h3 className="text-base font-semibold text-text-primary">Top 50 Trending Songs in India</h3>
                     </div>
                     {isLoadingTop ? (
                       <div className="flex flex-col items-center justify-center py-10 text-text-muted font-sans space-y-2">

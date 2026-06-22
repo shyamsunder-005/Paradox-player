@@ -52,8 +52,13 @@ export default function AboutView() {
 
 
         {/* Closing Credits Note */}
-        <div className="text-center font-mono text-[11px] text-text-muted py-2 space-y-1">
-          <div>Built by Sree. Non-profit open-source project.</div>
+        <div className="text-center py-6 mt-4">
+          <p className="font-sans text-sm text-text-muted mb-1">
+            Non-profit open-source project.
+          </p>
+          <p className="font-mono text-base font-bold bg-gradient-to-r from-brand to-brand-hover bg-clip-text text-transparent inline-block">
+            Built by Sree
+          </p>
         </div>
 
       </div>
