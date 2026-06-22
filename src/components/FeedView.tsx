@@ -71,6 +71,11 @@ export default function FeedView({
   const [topArtists, setTopArtists] = useState<any[]>([]);
   const [isLoadingTop, setIsLoadingTop] = useState(false);
 
+  // Top Data Display Limits
+  const [topSongsLimit, setTopSongsLimit] = useState(10);
+  const [topAlbumsLimit, setTopAlbumsLimit] = useState(10);
+  const [topArtistsLimit, setTopArtistsLimit] = useState(10);
+
   useEffect(() => {
     async function loadTopData() {
       setIsLoadingTop(true);
@@ -658,24 +663,34 @@ export default function FeedView({
                         <p className="text-xs">Type a keyword to discover high-fidelity MP3 downloads & streams</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 gap-2.5">
-                        {topSongs.map((song) => (
-                          <SongCard
-                            key={song.id}
-                            song={song}
-                            layout="row"
-                            isActive={currentSong?.id === song.id}
-                            isPlaying={isPlaying}
-                            isFavorite={isSongFavorite(song.id)}
-                            onFavoriteToggle={() => onFavoriteToggle(song)}
-                            onPlayTrigger={() => onSetSongQueue(topSongs, topSongs.indexOf(song))}
-                            onAddToQueue={() => onAddToQueue(song)}
-                            onDownload={() => onDownloadSong(song)}
-                            playlists={playlists}
-                            onAddToPlaylist={(plId) => onAddToPlaylist(song.id, plId)}
-                            onCreatePlaylistAndAdd={(name) => onCreatePlaylistAndAdd(song.id, name)}
-                          />
-                        ))}
+                      <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-1 gap-2.5">
+                          {topSongs.slice(0, topSongsLimit).map((song) => (
+                            <SongCard
+                              key={song.id}
+                              song={song}
+                              layout="row"
+                              isActive={currentSong?.id === song.id}
+                              isPlaying={isPlaying}
+                              isFavorite={isSongFavorite(song.id)}
+                              onFavoriteToggle={() => onFavoriteToggle(song)}
+                              onPlayTrigger={() => onSetSongQueue(topSongs, topSongs.indexOf(song))}
+                              onAddToQueue={() => onAddToQueue(song)}
+                              onDownload={() => onDownloadSong(song)}
+                              playlists={playlists}
+                              onAddToPlaylist={(plId) => onAddToPlaylist(song.id, plId)}
+                              onCreatePlaylistAndAdd={(name) => onCreatePlaylistAndAdd(song.id, name)}
+                            />
+                          ))}
+                        </div>
+                        {topSongsLimit < topSongs.length && (
+                          <button
+                            onClick={() => setTopSongsLimit((prev) => prev + 10)}
+                            className="w-full py-3 rounded-xl border border-border-color text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-sm font-semibold"
+                          >
+                            Load More
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -718,29 +733,39 @@ export default function FeedView({
                         <p className="text-xs">Loading top albums...</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {topAlbums.map((alb) => (
-                          <div
-                            key={alb.id}
-                            onClick={() => handleAlbumClick(alb.id)}
-                            className="group flex flex-col bg-bg-secondary hover:bg-white/5 border border-border-color rounded-2xl p-4 transition-all duration-300 cursor-pointer shadow-md select-none"
-                          >
-                            <div className="aspect-square w-full rounded-xl overflow-hidden mb-3 bg-bg-primary">
-                              <img
-                                src={getBigImage(alb.image)}
-                                alt={alb.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                referrerPolicy="no-referrer"
-                              />
+                      <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                          {topAlbums.slice(0, topAlbumsLimit).map((alb) => (
+                            <div
+                              key={alb.id}
+                              onClick={() => handleAlbumClick(alb.id)}
+                              className="group flex flex-col bg-bg-secondary hover:bg-white/5 border border-border-color rounded-2xl p-4 transition-all duration-300 cursor-pointer shadow-md select-none"
+                            >
+                              <div className="aspect-square w-full rounded-xl overflow-hidden mb-3 bg-bg-primary">
+                                <img
+                                  src={getBigImage(alb.image)}
+                                  alt={alb.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                              <h4 className="font-semibold text-sm truncate text-text-primary" title={alb.name}>
+                                {alb.name}
+                              </h4>
+                              <p className="text-xs text-text-muted truncate mt-0.5">
+                                {alb.year || 'Album'}
+                              </p>
                             </div>
-                            <h4 className="font-semibold text-sm truncate text-text-primary" title={alb.name}>
-                              {alb.name}
-                            </h4>
-                            <p className="text-xs text-text-muted truncate mt-0.5">
-                              {alb.year || 'Album'}
-                            </p>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        {topAlbumsLimit < topAlbums.length && (
+                          <button
+                            onClick={() => setTopAlbumsLimit((prev) => prev + 10)}
+                            className="w-full py-3 rounded-xl border border-border-color text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-sm font-semibold"
+                          >
+                            Load More
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -789,29 +814,39 @@ export default function FeedView({
                         <p className="text-xs">Loading top artists...</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                        {topArtists.map((art) => (
-                          <div
-                            key={art.id}
-                            onClick={() => handleArtistClick(art.id)}
-                            className="group flex flex-col items-center bg-bg-secondary hover:bg-white/5 border border-border-color hover:border-brand/35 rounded-2xl p-4 text-center transition-all duration-300 cursor-pointer shadow-md select-none"
-                          >
-                            <div className="relative w-20 h-20 rounded-full overflow-hidden mb-3 bg-bg-primary shadow-inner">
-                              <img
-                                src={getMediumImage(art.image)}
-                                alt={art.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                referrerPolicy="no-referrer"
-                              />
+                      <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                          {topArtists.slice(0, topArtistsLimit).map((art) => (
+                            <div
+                              key={art.id}
+                              onClick={() => handleArtistClick(art.id)}
+                              className="group flex flex-col items-center bg-bg-secondary hover:bg-white/5 border border-border-color hover:border-brand/35 rounded-2xl p-4 text-center transition-all duration-300 cursor-pointer shadow-md select-none"
+                            >
+                              <div className="relative w-20 h-20 rounded-full overflow-hidden mb-3 bg-bg-primary shadow-inner">
+                                <img
+                                  src={getMediumImage(art.image)}
+                                  alt={art.name}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                              <h4 className="font-semibold text-xs text-text-primary truncate w-full" title={art.name}>
+                                {art.name}
+                              </h4>
+                              <span className="text-[10px] text-brand font-mono font-medium block mt-1 uppercase tracking-wider">
+                                {art.role || 'Artist'}
+                              </span>
                             </div>
-                            <h4 className="font-semibold text-xs text-text-primary truncate w-full" title={art.name}>
-                              {art.name}
-                            </h4>
-                            <span className="text-[10px] text-brand font-mono font-medium block mt-1 uppercase tracking-wider">
-                              {art.role || 'Artist'}
-                            </span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        {topArtistsLimit < topArtists.length && (
+                          <button
+                            onClick={() => setTopArtistsLimit((prev) => prev + 10)}
+                            className="w-full py-3 rounded-xl border border-border-color text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-sm font-semibold"
+                          >
+                            Load More
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

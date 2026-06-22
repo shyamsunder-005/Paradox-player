@@ -144,7 +144,7 @@ export default function PlayerBar({
             {/* Back Arrow */}
             <button
               onClick={(e) => { e.stopPropagation(); onPrevious(); }}
-              className="hidden md:block p-2 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
+              className="p-2 text-text-primary md:text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
               title="Previous song"
             >
               <SkipBack className="w-6 h-6" />

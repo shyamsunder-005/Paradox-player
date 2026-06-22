@@ -419,6 +419,17 @@ export default function App() {
         <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-brand/10 blur-[130px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none z-0"></div>
         <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-brand/5 blur-[110px] rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none z-0"></div>
         
+        {/* Mobile Header Branding */}
+        <div className="md:hidden flex items-center justify-between p-4 z-20 shrink-0 border-b border-border-color bg-bg-primary/50 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <Disc className="w-5 h-5 text-brand animate-spin-slow" />
+            <h1 className="font-sans font-bold text-base text-text-primary">Paradox Player</h1>
+          </div>
+          <div className="font-mono text-[11px] font-bold bg-gradient-to-r from-brand to-brand-hover bg-clip-text text-transparent">
+            Built by Sree
+          </div>
+        </div>
+        
         {/* Dynamic Section Contents Scroll view container */}
         <div className="flex-1 w-full overflow-hidden flex flex-col relative z-10">
           {renderContent()}
