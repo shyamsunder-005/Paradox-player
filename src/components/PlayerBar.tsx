@@ -62,7 +62,7 @@ export default function PlayerBar({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-20 md:h-24 glass border-t border-border-color z-40 flex flex-col justify-between select-none pb-safe">
+    <div className="fixed bottom-16 md:bottom-0 left-0 right-0 h-16 md:h-24 glass border-t border-border-color z-40 flex flex-col justify-between select-none pb-safe">
       {/* Absolute Progress Scrubber for Mobile + Desktop */}
       <div className="w-full h-1 relative group cursor-pointer" title="Seek (Arrow Left/Right)">
         <input
@@ -87,14 +87,14 @@ export default function PlayerBar({
       </div>
 
       {/* Main Bar Contents */}
-      <div className="flex-1 flex items-center justify-between px-4 md:px-8 gap-4">
+      <div className="flex-1 flex items-center justify-between px-3 md:px-8 gap-3 md:gap-4">
         
         {/* Thumbnail & Track Metadata Info */}
         <div 
-          className="flex items-center gap-3 min-w-0 max-w-[40%] cursor-pointer group"
+          className="flex items-center gap-3 min-w-0 max-w-[65%] md:max-w-[40%] cursor-pointer group flex-1 md:flex-none"
           onClick={onOpenSongPage}
         >
-          <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden bg-bg-secondary shrink-0 border border-border-color shadow-md">
+          <div className="relative w-10 h-10 md:w-14 md:h-14 rounded-md md:rounded-xl overflow-hidden bg-bg-secondary shrink-0 border border-border-color shadow-sm md:shadow-md">
             <img
               src={imageUrl}
               alt={currentSong.name}
@@ -128,62 +128,62 @@ export default function PlayerBar({
         </div>
 
         {/* Playback Controls & Timers */}
-        <div className="flex flex-col items-center gap-1.5 flex-1 max-w-xl">
-          <div className="flex items-center gap-2 md:gap-5">
+        <div className="flex flex-col items-end md:items-center justify-center gap-1.5 flex-none md:flex-1 md:max-w-xl">
+          <div className="flex items-center gap-3 md:gap-5">
             {/* Shuffle Toggle */}
             <button
-              onClick={onShuffleToggle}
-              className={`p-2 rounded-xl transition-all cursor-pointer hover:scale-110 ${
+              onClick={(e) => { e.stopPropagation(); onShuffleToggle(); }}
+              className={`hidden md:block p-2 rounded-xl transition-all cursor-pointer hover:scale-110 ${
                 isShuffle ? 'text-brand' : 'text-text-muted hover:text-text-primary'
               }`}
               title="Shuffle"
             >
-              <Shuffle className="w-4 h-4 md:w-[18px] md:h-[18px]" />
+              <Shuffle className="w-[18px] h-[18px]" />
             </button>
 
             {/* Back Arrow */}
             <button
-              onClick={onPrevious}
-              className="p-2 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
+              onClick={(e) => { e.stopPropagation(); onPrevious(); }}
+              className="hidden md:block p-2 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
               title="Previous song"
             >
-              <SkipBack className="w-5 h-5 md:w-6 md:h-6" />
+              <SkipBack className="w-6 h-6" />
             </button>
 
             {/* Play/Pause Blob */}
             <button
-              onClick={onTogglePlay}
-              className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-brand text-bg-primary hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shadow-lg shadow-brand/10 cursor-pointer"
+              onClick={(e) => { e.stopPropagation(); onTogglePlay(); }}
+              className="w-10 h-10 md:w-12 md:h-12 rounded-full md:bg-brand md:text-bg-primary text-text-primary hover:scale-105 active:scale-95 transition-transform flex items-center justify-center md:shadow-lg md:shadow-brand/10 cursor-pointer"
               title={isPlaying ? 'Pause (Spacebar)' : 'Play (Spacebar)'}
             >
               {isPlaying ? (
-                <Pause className="w-4 h-4 md:w-5 md:h-5 fill-current" />
+                <Pause className="w-6 h-6 md:w-5 md:h-5 fill-current" />
               ) : (
-                <Play className="w-4 h-4 md:w-5 md:h-5 fill-current ml-[3px]" />
+                <Play className="w-6 h-6 md:w-5 md:h-5 fill-current ml-[3px]" />
               )}
             </button>
 
             {/* Skip Arrow */}
             <button
-              onClick={onNext}
-              className="p-2 text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
+              onClick={(e) => { e.stopPropagation(); onNext(); }}
+              className="p-2 text-text-primary md:text-text-muted hover:text-text-primary hover:scale-110 cursor-pointer active:scale-95 transition-all"
               title="Next song"
             >
-              <SkipForward className="w-5 h-5 md:w-6 md:h-6" />
+              <SkipForward className="w-6 h-6" />
             </button>
 
             {/* Repeat Toggle */}
             <button
-              onClick={onRepeatToggle}
-              className={`p-2 rounded-xl transition-all relative cursor-pointer hover:scale-110 ${
+              onClick={(e) => { e.stopPropagation(); onRepeatToggle(); }}
+              className={`hidden md:block p-2 rounded-xl transition-all relative cursor-pointer hover:scale-110 ${
                 repeatMode !== 'off' ? 'text-brand' : 'text-text-muted hover:text-text-primary'
               }`}
               title={`Repeat: ${repeatMode}`}
             >
               {repeatMode === 'one' ? (
-                <Repeat1 className="w-4 h-4 md:w-[18px] md:h-[18px]" />
+                <Repeat1 className="w-[18px] h-[18px]" />
               ) : (
-                <Repeat className="w-4 h-4 md:w-[18px] md:h-[18px]" />
+                <Repeat className="w-[18px] h-[18px]" />
               )}
               {repeatMode === 'all' && (
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand"></span>
@@ -200,7 +200,7 @@ export default function PlayerBar({
         </div>
 
         {/* Volume slider & maximize */}
-        <div className="flex items-center gap-4 text-text-muted max-w-[25%] shrink-0">
+        <div className="hidden md:flex items-center gap-4 text-text-muted max-w-[25%] shrink-0">
           <div className="hidden md:flex items-center gap-2">
             <button onClick={toggleMute} className="p-1 hover:text-text-primary hover:scale-110 transition-all cursor-pointer" title={volume === 0 ? 'Unmute (M)' : 'Mute (M)'}>
               {volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}

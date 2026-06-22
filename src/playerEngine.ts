@@ -1,6 +1,6 @@
 import { Song } from './types';
-import { getBigImage, getPlaybackUrl } from './api';
-import { getQueue, saveQueue, getHistory, saveHistory } from './storage';
+import { getBigImage, getPlaybackUrl, searchSongs } from './api';
+import { getQueue, saveQueue, getHistory, saveHistory, getAudioQuality, getAutoPlayEndless } from './storage';
 
 export type RepeatMode = 'off' | 'one' | 'all';
 export type PlaybackStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
@@ -191,7 +191,8 @@ class PlayerEngine {
     }
 
     this.state.currentSong = song;
-    const url = getPlaybackUrl(song);
+    const quality = getAudioQuality();
+    const url = getPlaybackUrl(song, quality);
     
     if (!url) {
       console.error('No playback URL found for this song:', song.name);
@@ -247,7 +248,7 @@ class PlayerEngine {
   }
 
   // Skip to next track
-  public playNext() {
+  public async playNext() {
     if (this.state.queue.length === 0) return;
 
     let nextIndex = this.state.currentIndex + 1;
@@ -257,6 +258,32 @@ class PlayerEngine {
     } else if (nextIndex >= this.state.queue.length) {
       if (this.state.repeatMode === 'all') {
         nextIndex = 0;
+      } else if (getAutoPlayEndless()) {
+        // Fetch new top songs to append
+        this.state.status = 'loading';
+        this.emit();
+        try {
+          const newSongs = await searchSongs('top songs');
+          const toAdd = newSongs.filter(ns => !this.state.queue.some(qs => qs.id === ns.id));
+          if (toAdd.length > 0) {
+            this.state.queue.push(...toAdd);
+            saveQueue(this.state.queue);
+            // nextIndex is valid now
+          } else {
+            // Failsafe stop
+            this.audio.pause();
+            this.state.currentTime = 0;
+            this.audio.currentTime = 0;
+            this.emit();
+            return;
+          }
+        } catch {
+          this.audio.pause();
+          this.state.currentTime = 0;
+          this.audio.currentTime = 0;
+          this.emit();
+          return;
+        }
       } else {
         // Stop playback at end of queue
         this.audio.pause();

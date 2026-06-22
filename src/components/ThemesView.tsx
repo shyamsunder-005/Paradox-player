@@ -81,7 +81,7 @@ export default function ThemesView({ currentTheme, onThemeChange }: ThemesViewPr
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-32 font-sans select-none text-text-primary">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-40 md:pb-32 font-sans select-none text-text-primary">
       <div className="max-w-4xl mx-auto space-y-6">
         
         {/* Header Title Grid */}

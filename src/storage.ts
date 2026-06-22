@@ -3,10 +3,11 @@ import { Song, Playlist } from './types';
 const KEYS = {
   FAVOURITES: 'tunely_favourites_info',
   PLAYLISTS: 'tunely_playlists_info',
-  QUEUE: 'tunely_play_queue_info',
   CURRENT_THEME: 'tunely_active_theme_id',
   HISTORY: 'tunely_play_history_info',
   AUTOFILL_QUEUE: 'tunely_autofill_queue',
+  AUDIO_QUALITY: 'tunely_audio_quality',
+  AUTOPLAY_ENDLESS: 'tunely_autoplay_endless',
 };
 
 function safeGet(key: string, defaultValue: any): any {
@@ -82,4 +83,22 @@ export function getAutoFillQueue(): boolean {
 
 export function saveAutoFillQueue(val: boolean): void {
   safeSet(KEYS.AUTOFILL_QUEUE, val);
+}
+
+export type AudioQuality = 'high' | 'medium' | 'low';
+
+export function getAudioQuality(): AudioQuality {
+  return safeGet(KEYS.AUDIO_QUALITY, 'high');
+}
+
+export function saveAudioQuality(val: AudioQuality): void {
+  safeSet(KEYS.AUDIO_QUALITY, val);
+}
+
+export function getAutoPlayEndless(): boolean {
+  return safeGet(KEYS.AUTOPLAY_ENDLESS, true);
+}
+
+export function saveAutoPlayEndless(val: boolean): void {
+  safeSet(KEYS.AUTOPLAY_ENDLESS, val);
 }

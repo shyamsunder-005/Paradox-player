@@ -18,11 +18,11 @@ import PlayerBar from './components/PlayerBar';
 
 import { playerEngine, PlayerState, RepeatMode } from './playerEngine';
 import { downloadManager, DownloadState } from './downloadManager';
-import { 
-  getFavourites, saveFavourites, 
   getPlaylists, savePlaylists, 
   getTheme, saveTheme,
-  getAutoFillQueue, saveAutoFillQueue
+  getAutoFillQueue, saveAutoFillQueue,
+  getAudioQuality, saveAudioQuality, AudioQuality,
+  getAutoPlayEndless, saveAutoPlayEndless
 } from './storage';
 import { getSongDetails } from './api';
 
@@ -36,6 +36,8 @@ export default function App() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [activeTheme, setActiveTheme] = useState<string>('midnight');
   const [autoFillQueue, setAutoFillQueue] = useState<boolean>(true);
+  const [audioQuality, setAudioQuality] = useState<AudioQuality>('high');
+  const [autoPlayEndless, setAutoPlayEndless] = useState<boolean>(true);
 
   // 1. Subscribe to Player Engine & Background Download State listeners on mount
   useEffect(() => {
@@ -56,6 +58,8 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', savedTheme);
 
     setAutoFillQueue(getAutoFillQueue());
+    setAudioQuality(getAudioQuality());
+    setAutoPlayEndless(getAutoPlayEndless());
 
     return () => {
       unsubPlayer();
@@ -185,6 +189,16 @@ export default function App() {
   const handleAutoFillQueueToggle = (val: boolean) => {
     setAutoFillQueue(val);
     saveAutoFillQueue(val);
+  };
+
+  const handleAudioQualityChange = (val: AudioQuality) => {
+    setAudioQuality(val);
+    saveAudioQuality(val);
+  };
+
+  const handleAutoPlayEndlessToggle = (val: boolean) => {
+    setAutoPlayEndless(val);
+    saveAutoPlayEndless(val);
   };
 
   // 4. Background Track metadata resolvers for custom Playlists adds
@@ -374,6 +388,10 @@ export default function App() {
           <SettingsView
             autoFillQueue={autoFillQueue}
             onAutoFillQueueToggle={handleAutoFillQueueToggle}
+            audioQuality={audioQuality}
+            onAudioQualityChange={handleAudioQualityChange}
+            autoPlayEndless={autoPlayEndless}
+            onAutoPlayEndlessToggle={handleAutoPlayEndlessToggle}
           />
         );
       case 'about':

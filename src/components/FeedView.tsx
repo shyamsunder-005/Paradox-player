@@ -180,7 +180,7 @@ export default function FeedView({
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (isLoadingMore || !hasMoreResults || searchQuery.trim() === '') return;
+    if (isLoadingMore || !hasMoreResults || searchQuery.trim() === '' || isSearching) return;
 
     if (observerRef.current) observerRef.current.disconnect();
 
@@ -197,7 +197,7 @@ export default function FeedView({
     return () => {
       if (observerRef.current) observerRef.current.disconnect();
     };
-  }, [isLoadingMore, hasMoreResults, searchQuery, currentPage]);
+  }, [isLoadingMore, hasMoreResults, searchQuery, currentPage, isSearching]);
 
   // Sync activePlaylist when playlists prop changes
   useEffect(() => {
@@ -262,7 +262,7 @@ export default function FeedView({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-32 font-sans select-none text-text-primary">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-40 md:pb-32 font-sans select-none text-text-primary">
       
       {/* 1. PLAYLIST OVERLAY */}
       {subView === 'playlist' && activePlaylist && (
@@ -629,12 +629,12 @@ export default function FeedView({
             </div>
 
             {/* TAB SELECTOR BAR CONTAINER */}
-            <div className="flex border-b border-border-color">
+            <div className="flex border-b border-border-color overflow-x-auto scrollbar-none">
               {(['songs', 'albums', 'artists'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-3 text-xs md:text-sm font-semibold capitalize relative transition-colors ${
+                  className={`flex-1 min-w-[100px] py-3 text-xs md:text-sm font-semibold capitalize relative transition-colors ${
                     activeTab === tab ? 'text-brand' : 'text-text-muted hover:text-text-primary'
                   }`}
                 >

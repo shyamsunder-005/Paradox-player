@@ -1,4 +1,5 @@
 import { Song, Album, ArtistDetails, SongImage } from './types';
+import { AudioQuality } from './storage';
 
 /**
  * Robust fetch helper that queries active mirrors via our backend Express proxy.
@@ -270,15 +271,26 @@ export function getMediumImage(images: SongImage[] | undefined): string {
 }
 
 /**
- * Gets the highest quality audio stream from downloadUrls.
+ * Gets the highest quality audio stream from downloadUrls based on requested AudioQuality.
  */
-export function getPlaybackUrl(song: Song): string {
+export function getPlaybackUrl(song: Song, quality: AudioQuality = 'high'): string {
   if (!song.downloadUrl || song.downloadUrl.length === 0) return '';
-  // Find highest bitrate
+  // Find all options sorted descending
   const options = [...song.downloadUrl].sort((a, b) => {
     const rateA = parseInt(a.quality.replace(/[^0-9]/g, ''), 10) || 0;
     const rateB = parseInt(b.quality.replace(/[^0-9]/g, ''), 10) || 0;
     return rateB - rateA; // Descending
   });
-  return options[0]?.url ? `/api/stream/?url=${encodeURIComponent(options[0].url)}` : '';
+
+  let selectedUrl = options[0]?.url;
+
+  if (quality === 'medium') {
+    const mediumOpt = options.find(o => (parseInt(o.quality.replace(/[^0-9]/g, ''), 10) || 0) <= 160);
+    if (mediumOpt) selectedUrl = mediumOpt.url;
+  } else if (quality === 'low') {
+    const lowOpt = options.find(o => (parseInt(o.quality.replace(/[^0-9]/g, ''), 10) || 0) <= 96);
+    if (lowOpt) selectedUrl = lowOpt.url;
+  }
+
+  return selectedUrl ? `/api/stream/?url=${encodeURIComponent(selectedUrl)}` : '';
 }
