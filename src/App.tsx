@@ -19,6 +19,7 @@ import PlayerBar from './components/PlayerBar';
 import { playerEngine, PlayerState, RepeatMode } from './playerEngine';
 import { downloadManager, DownloadState } from './downloadManager';
 import { 
+  getFavourites, saveFavourites,
   getPlaylists, savePlaylists, 
   getTheme, saveTheme,
   getAutoFillQueue, saveAutoFillQueue,
