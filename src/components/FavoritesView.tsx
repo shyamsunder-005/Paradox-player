@@ -31,7 +31,6 @@ export default function FavoritesView({
   onDownloadSong,
   onDownloadSongs,
   playlists,
-  playlists,
   onAddToPlaylist,
   onCreatePlaylistAndAdd,
   onAddSongs,
