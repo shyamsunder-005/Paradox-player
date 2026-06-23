@@ -465,10 +465,10 @@ export default function FeedView({
               </div>
 
               <div className="space-y-2">
-                <h3 className="font-semibold text-base px-2">Top Hit Songs ({activeArtist.topSongs.length})</h3>
+                <h3 className="font-semibold text-base px-2">All Songs ({activeArtist.topSongs.length})</h3>
                 {activeArtist.topSongs.length === 0 ? (
                   <div className="text-center py-12 text-sm text-text-muted bg-white/5 rounded-2xl border border-dashed border-border-color">
-                    No top songs listed for this artist.
+                    No songs listed for this artist.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-1.5">

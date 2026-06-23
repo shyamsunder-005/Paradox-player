@@ -232,12 +232,25 @@ export async function getArtistDetails(id: string): Promise<ArtistDetails | null
 
   if (!data) return null;
 
-  let topSongs = (data.topSongs || []).map((s: any) => cleanSong(s));
-  if (topSongs.length === 0 && data.name) {
-    try {
-      topSongs = await searchSongs(data.name, 1, 50);
-    } catch (e) {
-      console.error('[Paradox Player] Fallback artist search failed:', e);
+  let allSongs: Song[] = [];
+  try {
+    // Fetch all songs for the artist using the dedicated endpoint
+    const songsJson = await fetchFromApi(`artists/${id}/songs?page=1`);
+    const results = songsJson.data?.songs || songsJson.data?.results || [];
+    allSongs = results.map((s: any) => cleanSong(s));
+  } catch (err) {
+    console.error(`[Paradox Player] Failed to load all songs for artist ${id}:`, err);
+  }
+
+  // If the dedicated endpoint fails or is empty, fallback to the included topSongs or searchSongs
+  if (allSongs.length === 0) {
+    allSongs = (data.topSongs || []).map((s: any) => cleanSong(s));
+    if (allSongs.length === 0 && data.name) {
+      try {
+        allSongs = await searchSongs(data.name, 1, 50);
+      } catch (e) {
+        console.error('[Paradox Player] Fallback artist search failed:', e);
+      }
     }
   }
 
@@ -246,7 +259,7 @@ export async function getArtistDetails(id: string): Promise<ArtistDetails | null
     name: unescapeHtml(data.name || 'Unknown Artist'),
     image: data.image || [],
     bio: unescapeHtml(data.bio || ''),
-    topSongs,
+    topSongs: allSongs,
   };
 }
 
