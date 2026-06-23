@@ -70,7 +70,7 @@ export function cleanSong(song: any): Song {
   };
 }
 
-export async function searchSongs(query: string, page = 1, limit = 50): Promise<Song[]> {
+export async function searchSongs(query: string, page = 1, limit = 20): Promise<Song[]> {
   if (!query.trim()) return [];
   try {
     const json = await fetchFromApi(`search/songs?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
@@ -82,7 +82,7 @@ export async function searchSongs(query: string, page = 1, limit = 50): Promise<
   }
 }
 
-export async function searchAlbums(query: string, page = 1, limit = 50): Promise<Album[]> {
+export async function searchAlbums(query: string, page = 1, limit = 20): Promise<Album[]> {
   if (!query.trim()) return [];
   try {
     const json = await fetchFromApi(`search/albums?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
@@ -105,7 +105,7 @@ export async function searchAlbums(query: string, page = 1, limit = 50): Promise
   }
 }
 
-export async function searchArtists(query: string, page = 1, limit = 50): Promise<any[]> {
+export async function searchArtists(query: string, page = 1, limit = 20): Promise<any[]> {
   if (!query.trim()) return [];
   try {
     const json = await fetchFromApi(`search/artists?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
@@ -153,48 +153,45 @@ export async function getSongDetails(id: string): Promise<Song | null> {
 }
 
 export async function getAlbumDetails(id: string): Promise<Album | null> {
+  let data: any = null;
   try {
     const json = await fetchFromApi(`albums?id=${id}`);
-    const data = json.data;
-    if (!data) return null;
-
-    return {
-      id: data.id || '',
-      name: unescapeHtml(data.name || 'Untitled Album'),
-      year: data.year || '',
-      image: data.image || [],
-      artists: {
-        primary: (data.artists?.primary || []).map((art: any) => ({
-          id: art.id || '',
-          name: unescapeHtml(art.name || ''),
-        })),
-      },
-      songs: (data.songs || []).map((s: any) => cleanSong(s)),
-    };
+    data = json.data;
   } catch (err) {
     console.error(`[Paradox Player] Failed to load details for album ${id}:`, err);
     try {
       const json = await fetchFromApi(`albums/${id}`);
-      const data = json.data;
-      if (!data) return null;
-      return {
-        id: data.id || '',
-        name: unescapeHtml(data.name || 'Untitled Album'),
-        year: data.year || '',
-        image: data.image || [],
-        artists: {
-          primary: (data.artists?.primary || []).map((art: any) => ({
-            id: art.id || '',
-            name: unescapeHtml(art.name || ''),
-          })),
-        },
-        songs: (data.songs || []).map((s: any) => cleanSong(s)),
-      };
+      data = json.data;
     } catch (e) {
       console.error('[Paradox Player] Backup album details fetch failed:', e);
       return null;
     }
   }
+
+  if (!data) return null;
+
+  let songs = (data.songs || []).map((s: any) => cleanSong(s));
+  if (songs.length === 0 && data.name) {
+    try {
+      songs = await searchSongs(data.name, 1, 50);
+    } catch (e) {
+      console.error('[Paradox Player] Fallback album search failed:', e);
+    }
+  }
+
+  return {
+    id: data.id || '',
+    name: unescapeHtml(data.name || 'Untitled Album'),
+    year: data.year || '',
+    image: data.image || [],
+    artists: {
+      primary: (data.artists?.primary || []).map((art: any) => ({
+        id: art.id || '',
+        name: unescapeHtml(art.name || ''),
+      })),
+    },
+    songs,
+  };
 }
 
 export async function getPlaylistDetails(id: string, limit: number = 50): Promise<Album | null> {
@@ -218,36 +215,39 @@ export async function getPlaylistDetails(id: string, limit: number = 50): Promis
 }
 
 export async function getArtistDetails(id: string): Promise<ArtistDetails | null> {
+  let data: any = null;
   try {
     const json = await fetchFromApi(`artists?id=${id}`);
-    const data = json.data;
-    if (!data) return null;
-
-    return {
-      id: data.id || '',
-      name: unescapeHtml(data.name || 'Unknown Artist'),
-      image: data.image || [],
-      bio: unescapeHtml(data.bio || ''),
-      topSongs: (data.topSongs || []).map((s: any) => cleanSong(s)),
-    };
+    data = json.data;
   } catch (err) {
     console.error(`[Paradox Player] Failed to list details for artist ${id}, trying backup:`, err);
     try {
       const json = await fetchFromApi(`artists/${id}`);
-      const data = json.data;
-      if (!data) return null;
-      return {
-        id: data.id || '',
-        name: unescapeHtml(data.name || 'Unknown Artist'),
-        image: data.image || [],
-        bio: unescapeHtml(data.bio || ''),
-        topSongs: (data.topSongs || []).map((s: any) => cleanSong(s)),
-      };
+      data = json.data;
     } catch (e) {
       console.error('[Paradox Player] Artist backup search failed:', e);
       return null;
     }
   }
+
+  if (!data) return null;
+
+  let topSongs = (data.topSongs || []).map((s: any) => cleanSong(s));
+  if (topSongs.length === 0 && data.name) {
+    try {
+      topSongs = await searchSongs(data.name, 1, 50);
+    } catch (e) {
+      console.error('[Paradox Player] Fallback artist search failed:', e);
+    }
+  }
+
+  return {
+    id: data.id || '',
+    name: unescapeHtml(data.name || 'Unknown Artist'),
+    image: data.image || [],
+    bio: unescapeHtml(data.bio || ''),
+    topSongs,
+  };
 }
 
 /**
